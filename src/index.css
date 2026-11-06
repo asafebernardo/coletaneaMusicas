@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --paper: 243 239 230;
+  --card: 255 253 248;
+  --ink: 28 25 21;
+  --ink-soft: 109 102 92;
+  --line: 230 222 208;
+  --pine: 30 77 58;
+  --pine-dark: 22 57 43;
+  --danger: 122 51 44;
+  --danger-soft: 248 236 232;
+  --voice-men: 29 78 158;
+  --voice-women: 184 52 116;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: 0 0 0;
+  --card: 18 18 18;
+  --ink: 245 245 245;
+  --ink-soft: 163 163 163;
+  --line: 42 42 42;
+  --pine: 46 122 90;
+  --pine-dark: 32 92 68;
+  --danger: 248 164 158;
+  --danger-soft: 68 32 30;
+  --voice-men: 147 197 253;
+  --voice-women: 249 168 212;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: rgb(var(--paper));
+  color: rgb(var(--ink));
+  font-family: "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.song-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.song-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.lyric-editor:empty::before {
+  content: attr(data-placeholder);
+  color: rgb(var(--ink-soft));
+  white-space: pre-wrap;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-title linear infinite;
+}
+
+.marquee-item {
+  padding-right: 3rem;
+  white-space: nowrap;
+}
+
+@keyframes marquee-title {
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}

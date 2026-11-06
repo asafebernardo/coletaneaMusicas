@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f3efe6" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("coletanea-theme");
+          if (theme !== "dark") theme = "light";
+          document.documentElement.dataset.theme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#f3efe6");
+        } catch (e) {}
+      })();
+    </script>
+    <meta
+      name="description"
+      content="Coletânea de músicas cristãs para uso no site, no formato de um app de celular."
+    />
+    <title>Coletânea de Louvor</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
