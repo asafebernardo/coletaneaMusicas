@@ -1,3 +1,4 @@
+import { chordedStanzas } from "@/lib/chords.js";
 import { stanzasOf } from "@/lib/voices.js";
 
 const REFRAIN_LABEL = /^(refr[aã]o|coro)\s*:?$/i;
@@ -62,6 +63,25 @@ function Stanza({ lines, showVoices, italic }) {
   );
 }
 
+function ChordStanza({ lines, italic }) {
+  return (
+    <div className="space-y-1">
+      {lines.map((line, index) => (
+        <div key={index} className="space-y-0.5">
+          {line.chord.trim() ? (
+            <p className="whitespace-pre font-mono text-[0.92em] font-semibold leading-tight text-pine">
+              {line.chord}
+            </p>
+          ) : null}
+          <p className={`whitespace-pre-wrap font-mono leading-snug ${italic ? "italic" : ""}`}>
+            {line.text}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Refrain({ lines, showVoices }) {
   if (lines.length === 0) return null;
   return (
@@ -72,43 +92,127 @@ function Refrain({ lines, showVoices }) {
   );
 }
 
-export default function Lyrics({ letra, refrao, vozesLetra, vozesRefrao, cronologica, refraoPrimeiro, showVoices, fontSize }) {
-  const verses = stanzasOf(letra, vozesLetra);
-  const chorus = stanzasOf(stripRefrainLabel(refrao), vozesRefrao).flat();
-  const lead = Boolean(refraoPrimeiro) && chorus.length > 0;
-  const repeated = Boolean(cronologica) && chorus.length > 0;
+function ChordRefrain({ lines }) {
+  if (lines.length === 0) return null;
+  return (
+    <div>
+      <p className="mb-1 text-[0.78em] not-italic tracking-[0.16em] text-ink-soft">Refrão</p>
+      <ChordStanza lines={lines} italic />
+    </div>
+  );
+}
+
+function SongBody({ verses, chorus, lead, repeated, renderVerse, renderChorus }) {
+  if (repeated) {
+    return (
+      <>
+        {lead ? renderChorus() : null}
+        {verses.map((stanza, index) => (
+          <div key={index} className="space-y-6">
+            {renderVerse(stanza, index)}
+            {renderChorus()}
+          </div>
+        ))}
+      </>
+    );
+  }
+  if (lead) {
+    return (
+      <>
+        {renderChorus()}
+        {verses.map((stanza, index) => renderVerse(stanza, index))}
+      </>
+    );
+  }
+  return (
+    <>
+      {verses[0] ? renderVerse(verses[0], 0) : null}
+      {chorus.length > 0 ? renderChorus() : null}
+      {verses.slice(1).map((stanza, index) => renderVerse(stanza, index + 1))}
+    </>
+  );
+}
+
+export default function Lyrics({
+  letra,
+  refrao,
+  vozesLetra,
+  vozesRefrao,
+  cifraLetra,
+  cifraRefrao,
+  cronologica,
+  refraoPrimeiro,
+  showVoices,
+  showChords,
+  fontSize,
+}) {
+  const cleanRefrao = stripRefrainLabel(refrao);
+  const lead = Boolean(refraoPrimeiro);
+  const repeated = Boolean(cronologica);
 
   return (
     <article
-      className="space-y-6 px-5 py-6 text-center font-lyric leading-relaxed"
+      className={`space-y-6 px-5 py-6 leading-relaxed ${
+        showChords ? "font-mono" : "text-center font-lyric"
+      }`}
       style={{ fontSize: `${fontSize}px` }}
     >
-      {repeated ? (
-        <>
-          {lead ? <Refrain lines={chorus} showVoices={showVoices} /> : null}
-          {verses.map((stanza, index) => (
-            <div key={index} className="space-y-6">
-              <Stanza lines={stanza} showVoices={showVoices} />
-              <Refrain lines={chorus} showVoices={showVoices} />
-            </div>
-          ))}
-        </>
-      ) : lead ? (
-        <>
-          <Refrain lines={chorus} showVoices={showVoices} />
-          {verses.map((stanza, index) => (
-            <Stanza key={index} lines={stanza} showVoices={showVoices} />
-          ))}
-        </>
+      {showChords ? (
+        <div className="mx-auto w-fit max-w-full space-y-6 text-left">
+          <ChordedBody
+            letra={letra}
+            refrao={cleanRefrao}
+            cifraLetra={cifraLetra}
+            cifraRefrao={cifraRefrao}
+            lead={lead}
+            repeated={repeated}
+          />
+        </div>
       ) : (
-        <>
-          {verses[0] ? <Stanza lines={verses[0]} showVoices={showVoices} /> : null}
-          {chorus.length > 0 ? <Refrain lines={chorus} showVoices={showVoices} /> : null}
-          {verses.slice(1).map((stanza, index) => (
-            <Stanza key={index} lines={stanza} showVoices={showVoices} />
-          ))}
-        </>
+        <VoicedBody
+          letra={letra}
+          refrao={cleanRefrao}
+          vozesLetra={vozesLetra}
+          vozesRefrao={vozesRefrao}
+          lead={lead}
+          repeated={repeated}
+          showVoices={showVoices}
+        />
       )}
     </article>
+  );
+}
+
+function VoicedBody({ letra, refrao, vozesLetra, vozesRefrao, lead, repeated, showVoices }) {
+  const verses = stanzasOf(letra, vozesLetra);
+  const chorus = stanzasOf(refrao, vozesRefrao).flat();
+  const showLead = lead && chorus.length > 0;
+  const showRepeated = repeated && chorus.length > 0;
+  return (
+    <SongBody
+      verses={verses}
+      chorus={chorus}
+      lead={showLead}
+      repeated={showRepeated}
+      renderVerse={(stanza, index) => <Stanza key={index} lines={stanza} showVoices={showVoices} />}
+      renderChorus={() => <Refrain lines={chorus} showVoices={showVoices} />}
+    />
+  );
+}
+
+function ChordedBody({ letra, refrao, cifraLetra, cifraRefrao, lead, repeated }) {
+  const verses = chordedStanzas(letra, cifraLetra);
+  const chorus = chordedStanzas(refrao, cifraRefrao).flat();
+  const showLead = lead && chorus.length > 0;
+  const showRepeated = repeated && chorus.length > 0;
+  return (
+    <SongBody
+      verses={verses}
+      chorus={chorus}
+      lead={showLead}
+      repeated={showRepeated}
+      renderVerse={(stanza, index) => <ChordStanza key={index} lines={stanza} />}
+      renderChorus={() => <ChordRefrain lines={chorus} />}
+    />
   );
 }

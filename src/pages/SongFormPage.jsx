@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createSong, getSong, messageForSongError, updateSong } from "@/api/songs.js";
+import ChordEditor from "@/components/ChordEditor.jsx";
 import { splitLyrics } from "@/components/Lyrics.jsx";
 import LyricEditor from "@/components/LyricEditor.jsx";
 import ThemeButton from "@/components/ThemeButton.jsx";
+import { packChordLines, syncChordLines } from "@/lib/chords.js";
 import { packLyrics } from "@/lib/voices.js";
 
 const emptyForm = {
@@ -14,20 +16,25 @@ const emptyForm = {
   refraoPrimeiro: false,
   vozesLetra: [],
   vozesRefrao: [],
+  cifraLetra: [],
+  cifraRefrao: [],
 };
 
 function fieldsFromSong(song) {
   const embedded = splitLyrics(song.letra || "");
   const storedRefrao = String(song.refrao ?? "").trim();
   const refrao = storedRefrao || embedded.refrao;
+  const letra = storedRefrao ? song.letra || "" : embedded.letra;
   return {
     titulo: song.titulo || "",
-    letra: storedRefrao ? song.letra || "" : embedded.letra,
+    letra,
     refrao,
     cronologica: Boolean(song.cronologica) && Boolean(refrao),
     refraoPrimeiro: Boolean(song.refraoPrimeiro) && Boolean(refrao),
     vozesLetra: Array.isArray(song.vozesLetra) ? song.vozesLetra : [],
     vozesRefrao: Array.isArray(song.vozesRefrao) ? song.vozesRefrao : [],
+    cifraLetra: syncChordLines(letra, song.cifraLetra),
+    cifraRefrao: syncChordLines(refrao, song.cifraRefrao),
   };
 }
 
@@ -37,6 +44,7 @@ export default function SongFormPage() {
   const editing = id != null;
   const numericId = Number(id);
   const [form, setForm] = useState(emptyForm);
+  const [contentTab, setContentTab] = useState("letra");
   const [status, setStatus] = useState(editing ? "loading" : "ready");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -83,6 +91,8 @@ export default function SongFormPage() {
       refraoPrimeiro: Boolean(form.refraoPrimeiro) && Boolean(refraoPack.text),
       vozesLetra: letraPack.marks,
       vozesRefrao: refraoPack.marks,
+      cifraLetra: syncChordLines(letraPack.text, packChordLines(form.letra, form.cifraLetra)),
+      cifraRefrao: syncChordLines(refraoPack.text, packChordLines(form.refrao, form.cifraRefrao)),
     };
     try {
       const saved = editing
@@ -146,68 +156,124 @@ export default function SongFormPage() {
               O número segue a ordem alfabética do título e muda quando a coletânea muda.
             </p>
           </div>
-          <div className="space-y-1.5">
-            <p className="text-xs font-medium text-ink-soft">Letra</p>
-            <LyricEditor
-              label="Letra"
-              text={form.letra}
-              marks={form.vozesLetra}
-              placeholder={"Primeira estrofe\n\nSegunda estrofe"}
-              minClass="min-h-48"
-              onChange={({ text, marks }) =>
-                setForm((current) => ({ ...current, letra: text, vozesLetra: marks }))
-              }
-            />
+
+          <div
+            className="grid grid-cols-2 rounded-xl border border-line bg-paper p-0.5"
+            role="tablist"
+            aria-label="Conteúdo da música"
+          >
+            <TabButton active={contentTab === "letra"} onClick={() => setContentTab("letra")}>
+              Letra
+            </TabButton>
+            <TabButton active={contentTab === "cifra"} onClick={() => setContentTab("cifra")}>
+              Cifra
+            </TabButton>
           </div>
-          <div className="space-y-1.5">
-            <p className="text-center text-[0.78em] tracking-[0.16em] text-ink-soft">Refrão</p>
-            <LyricEditor
-              label="Texto do refrão"
-              text={form.refrao}
-              marks={form.vozesRefrao}
-              placeholder="Texto do refrão"
-              italic
-              onChange={({ text, marks }) =>
-                setForm((current) => ({ ...current, refrao: text, vozesRefrao: marks }))
-              }
-            />
-          </div>
-          {form.refrao.trim() ? (
-            <div className="space-y-3">
-              <label className="flex items-start gap-3 rounded-xl border border-line px-3 py-3">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-4 w-4 accent-pine"
-                  checked={form.refraoPrimeiro}
-                  onChange={(event) =>
-                    setForm((current) => ({ ...current, refraoPrimeiro: event.target.checked }))
+
+          {contentTab === "letra" ? (
+            <>
+              <div className="space-y-1.5">
+                <p className="text-xs font-medium text-ink-soft">Letra</p>
+                <LyricEditor
+                  label="Letra"
+                  text={form.letra}
+                  marks={form.vozesLetra}
+                  placeholder={"Primeira estrofe\n\nSegunda estrofe"}
+                  minClass="min-h-48"
+                  onChange={({ text, marks }) =>
+                    setForm((current) => ({
+                      ...current,
+                      letra: text,
+                      vozesLetra: marks,
+                      cifraLetra: syncChordLines(text, current.cifraLetra),
+                    }))
                   }
                 />
-                <span>
-                  <span className="block text-sm font-medium">Refrão primeiro</span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft">
-                    O refrão fica no topo desta música. Com a ordem cronológica, ele também se repete depois de cada estrofe.
-                  </span>
-                </span>
-              </label>
-              <label className="flex items-start gap-3 rounded-xl border border-line px-3 py-3">
-                <input
-                  type="checkbox"
-                  className="mt-0.5 h-4 w-4 accent-pine"
-                  checked={form.cronologica}
-                  onChange={(event) =>
-                    setForm((current) => ({ ...current, cronologica: event.target.checked }))
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-center text-[0.78em] tracking-[0.16em] text-ink-soft">Refrão</p>
+                <LyricEditor
+                  label="Texto do refrão"
+                  text={form.refrao}
+                  marks={form.vozesRefrao}
+                  placeholder="Texto do refrão"
+                  italic
+                  onChange={({ text, marks }) =>
+                    setForm((current) => ({
+                      ...current,
+                      refrao: text,
+                      vozesRefrao: marks,
+                      cifraRefrao: syncChordLines(text, current.cifraRefrao),
+                    }))
                   }
                 />
-                <span>
-                  <span className="block text-sm font-medium">Ordem cronológica</span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft">
-                    Permite repetir o refrão depois de cada estrofe. Marcar aqui não liga a cronologia de quem está lendo.
-                  </span>
-                </span>
-              </label>
-            </div>
-          ) : null}
+              </div>
+              {form.refrao.trim() ? (
+                <div className="space-y-3">
+                  <label className="flex items-start gap-3 rounded-xl border border-line px-3 py-3">
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 h-4 w-4 accent-pine"
+                      checked={form.refraoPrimeiro}
+                      onChange={(event) =>
+                        setForm((current) => ({ ...current, refraoPrimeiro: event.target.checked }))
+                      }
+                    />
+                    <span>
+                      <span className="block text-sm font-medium">Refrão primeiro</span>
+                      <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft">
+                        O refrão fica no topo desta música. Com a ordem cronológica, ele também se repete depois de cada estrofe.
+                      </span>
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3 rounded-xl border border-line px-3 py-3">
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 h-4 w-4 accent-pine"
+                      checked={form.cronologica}
+                      onChange={(event) =>
+                        setForm((current) => ({ ...current, cronologica: event.target.checked }))
+                      }
+                    />
+                    <span>
+                      <span className="block text-sm font-medium">Ordem cronológica</span>
+                      <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft">
+                        Permite repetir o refrão depois de cada estrofe. Marcar aqui não liga a cronologia de quem está lendo.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <div className="space-y-1.5">
+                <p className="text-xs font-medium text-ink-soft">Cifra da letra</p>
+                <p className="text-xs leading-relaxed text-ink-soft">
+                  Digite acordes acima de cada linha (C, Dm, F#m7, G7(9), C/E…). Use espaços para
+                  alinhar. Na leitura, dá para mudar o tom da cifra.
+                </p>
+                <ChordEditor
+                  label="Cifra da letra"
+                  text={form.letra}
+                  chords={form.cifraLetra}
+                  onChange={(cifraLetra) => setForm((current) => ({ ...current, cifraLetra }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-center text-[0.78em] tracking-[0.16em] text-ink-soft">Refrão</p>
+                <ChordEditor
+                  label="Cifra do refrão"
+                  text={form.refrao}
+                  chords={form.cifraRefrao}
+                  italic
+                  emptyHint="Escreva o refrão na aba Letra para cifrar aqui."
+                  onChange={(cifraRefrao) => setForm((current) => ({ ...current, cifraRefrao }))}
+                />
+              </div>
+            </>
+          )}
+
           {error ? <p className="text-sm text-danger">{error}</p> : null}
           <div className="flex justify-end gap-2 pb-4">
             <Link
@@ -228,5 +294,21 @@ export default function SongFormPage() {
       )}
       </div>
     </div>
+  );
+}
+
+function TabButton({ active, onClick, children }) {
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      className={`h-9 rounded-[0.65rem] text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+        active ? "bg-card text-ink shadow-sm" : "text-ink-soft hover:text-ink"
+      }`}
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 }

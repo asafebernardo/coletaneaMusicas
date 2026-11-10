@@ -1,11 +1,13 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { packChordLines, syncChordLines } from "../src/lib/chords.js";
 import { withNumbers } from "../src/lib/songs.js";
 import { packLyrics } from "../src/lib/voices.js";
 
 /**
- * Catálogo local. Cada música é { id, titulo, letra, refrao, cronologica, refraoPrimeiro, vozesLetra, vozesRefrao }.
+ * Catálogo local. Cada música é
+ * { id, titulo, letra, refrao, cronologica, refraoPrimeiro, vozesLetra, vozesRefrao, cifraLetra, cifraRefrao }.
  * O número não fica gravado: é a posição do título em ordem alfabética.
  * A palavra "Refrão" não faz parte do texto: o app a mostra na leitura.
  * No ICER, MusicaLetra guarda só a letra; o refrão entra nesse campo na integração.
@@ -65,13 +67,14 @@ function presentSongs(songs) {
 
 export function validateSong(input) {
   const titulo = String(input?.titulo ?? "").trim();
-  const letraPack = packLyrics(input?.letra, input?.vozesLetra);
-  const refraoPack = packLyrics(
-    String(input?.refrao ?? "").replace(/^(?:refr[aã]o|coro)\s*:?\s*\n+/i, ""),
-    input?.vozesRefrao,
-  );
+  const letraRaw = input?.letra;
+  const refraoRaw = String(input?.refrao ?? "").replace(/^(?:refr[aã]o|coro)\s*:?\s*\n+/i, "");
+  const letraPack = packLyrics(letraRaw, input?.vozesLetra);
+  const refraoPack = packLyrics(refraoRaw, input?.vozesRefrao);
   const letra = letraPack.text;
   const refrao = refraoPack.text;
+  const cifraLetra = syncChordLines(letra, packChordLines(letraRaw, input?.cifraLetra));
+  const cifraRefrao = syncChordLines(refrao, packChordLines(refraoRaw, input?.cifraRefrao));
 
   if (!titulo || titulo.length > 200) {
     return { error: "titulo_invalido" };
@@ -90,6 +93,8 @@ export function validateSong(input) {
       refraoPrimeiro,
       vozesLetra: letraPack.marks,
       vozesRefrao: refraoPack.marks,
+      cifraLetra,
+      cifraRefrao,
     },
   };
 }

@@ -1,8 +1,6 @@
 export const VOICE_HOMENS = "homens";
 export const VOICE_MULHERES = "mulheres";
 
-const SHOW_KEY = "coletanea-vozes";
-
 function isVoice(value) {
   return value === VOICE_HOMENS || value === VOICE_MULHERES;
 }
@@ -175,22 +173,4 @@ export function renderLyricHtml(text, marks) {
   }
   if (cursor < raw.length) html += escapeHtml(raw.slice(cursor));
   return html;
-}
-
-export function readShowVoices() {
-  try {
-    const raw = localStorage.getItem(SHOW_KEY);
-    if (raw == null || raw === "") return true;
-    return raw === "1";
-  } catch {
-    return true;
-  }
-}
-
-export function writeShowVoices(show) {
-  try {
-    localStorage.setItem(SHOW_KEY, show ? "1" : "0");
-  } catch {
-    /* ignore */
-  }
 }

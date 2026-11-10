@@ -5,6 +5,13 @@ import Lyrics from "@/components/Lyrics.jsx";
 import MarqueeText from "@/components/MarqueeText.jsx";
 import SongScroll from "@/components/SongScroll.jsx";
 import ThemeButton from "@/components/ThemeButton.jsx";
+import TransposeBar from "@/components/TransposeBar.jsx";
+import {
+  detectSongKey,
+  songHasChords,
+  transposeChordLines,
+  transposeKeyLabel,
+} from "@/lib/chords.js";
 import {
   fontLimits,
   readFontSize,
@@ -12,7 +19,6 @@ import {
   writeFontSize,
   writeShowChronological,
 } from "@/lib/songs.js";
-import { readShowVoices, songHasVoices, writeShowVoices } from "@/lib/voices.js";
 
 const barItem =
   "flex h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine";
@@ -29,10 +35,21 @@ export default function SongPage() {
   const [status, setStatus] = useState(idOk ? "loading" : "missing");
   const [error, setError] = useState("");
   const [fontSize, setFontSize] = useState(readFontSize);
-  const [showVoices, setShowVoices] = useState(readShowVoices);
   const [showChronological, setShowChronological] = useState(readShowChronological);
+  const [showChords, setShowChords] = useState(false);
+  const [transpose, setTranspose] = useState(0);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const hasChords = songHasChords(song);
+  const baseKey = detectSongKey(song?.cifraLetra, song?.cifraRefrao);
+  const currentKey = baseKey ? transposeKeyLabel(baseKey, transpose) : "";
+  const preferFlats = String(currentKey || baseKey || "").includes("b");
+  const cifraLetraView = showChords
+    ? transposeChordLines(song?.cifraLetra, transpose, preferFlats)
+    : song?.cifraLetra;
+  const cifraRefraoView = showChords
+    ? transposeChordLines(song?.cifraRefrao, transpose, preferFlats)
+    : song?.cifraRefrao;
 
   useEffect(() => {
     if (!idOk) return undefined;
@@ -41,6 +58,8 @@ export default function SongPage() {
       .then((data) => {
         if (!active) return;
         setSong(data);
+        setShowChords(false);
+        setTranspose(0);
         setStatus("ready");
       })
       .catch((err) => {
@@ -152,9 +171,12 @@ export default function SongPage() {
             refrao={song.refrao}
             vozesLetra={song.vozesLetra}
             vozesRefrao={song.vozesRefrao}
+            cifraLetra={cifraLetraView}
+            cifraRefrao={cifraRefraoView}
             cronologica={Boolean(song.cronologica) && showChronological}
             refraoPrimeiro={Boolean(song.refraoPrimeiro)}
-            showVoices={showVoices}
+            showVoices={!showChords}
+            showChords={showChords && hasChords}
             fontSize={fontSize}
           />
         )}
@@ -216,37 +238,55 @@ export default function SongPage() {
         </div>
       ) : null}
 
+      {song && showChords && hasChords ? (
+        <TransposeBar
+          cifraLetra={song.cifraLetra}
+          cifraRefrao={song.cifraRefrao}
+          semitones={transpose}
+          onChange={setTranspose}
+        />
+      ) : null}
+
       {song ? (
         <nav
           aria-label="Controles da música"
-          className="grid shrink-0 grid-cols-2 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
+          className="grid shrink-0 grid-cols-3 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
         >
-          {songHasVoices(song) ? (
+          <button
+            type="button"
+            disabled
+            className={`${barItem} ${barDisabled}`}
+            aria-label="Vozes em breve"
+          >
+            <VoicesPartsIcon />
+            Vozes
+          </button>
+          {hasChords ? (
             <button
               type="button"
-              className={`${barItem} ${showVoices ? barOn : barOff}`}
-              aria-pressed={showVoices}
-              aria-label={showVoices ? "Ocultar divisão de vozes" : "Mostrar divisão de vozes"}
+              className={`${barItem} ${showChords ? barOn : barOff}`}
+              aria-pressed={showChords}
+              aria-label={showChords ? "Ver letra sem cifra" : "Ver música cifrada"}
               onClick={() =>
-                setShowVoices((current) => {
+                setShowChords((current) => {
                   const next = !current;
-                  writeShowVoices(next);
+                  if (!next) setTranspose(0);
                   return next;
                 })
               }
             >
-              <VoicesIcon />
-              Vozes
+              <ChordIcon />
+              Cifra
             </button>
           ) : (
             <button
               type="button"
               disabled
               className={`${barItem} ${barDisabled}`}
-              aria-label="Esta música não tem divisão de vozes"
+              aria-label="Esta música não tem cifra"
             >
-              <VoicesIcon plain />
-              Vozes
+              <ChordIcon />
+              Cifra
             </button>
           )}
           {song.cronologica && String(song.refrao || "").trim() ? (
@@ -286,15 +326,34 @@ export default function SongPage() {
   );
 }
 
-function VoicesIcon({ plain }) {
-  const men = plain ? "fill-current" : "fill-voice-men";
-  const women = plain ? "fill-current" : "fill-voice-women";
+function VoicesPartsIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden className="h-5 w-5 shrink-0">
-      <circle cx="6.4" cy="6.4" r="2.5" className={men} />
-      <path className={men} d="M2.2 18.2v-.4c0-2.4 1.85-4.1 4.2-4.1s4.2 1.7 4.2 4.1v.4z" />
-      <circle cx="17.6" cy="6.4" r="2.5" className={women} />
-      <path className={women} d="M13.4 18.2v-.4c0-2.4 1.85-4.1 4.2-4.1s4.2 1.7 4.2 4.1v.4z" />
+      <circle cx="6.4" cy="6.4" r="2.5" className="fill-voice-men" />
+      <path className="fill-voice-men" d="M2.2 18.2v-.4c0-2.4 1.85-4.1 4.2-4.1s4.2 1.7 4.2 4.1v.4z" />
+      <circle cx="17.6" cy="6.4" r="2.5" className="fill-voice-women" />
+      <path className="fill-voice-women" d="M13.4 18.2v-.4c0-2.4 1.85-4.1 4.2-4.1s4.2 1.7 4.2 4.1v.4z" />
+    </svg>
+  );
+}
+
+function ChordIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-5 w-5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="4.5" y="3.5" width="15" height="17" rx="1.5" />
+      <path d="M8 7.5h8" />
+      <path d="M8 12h8" />
+      <path d="M8 16.5h5" />
+      <circle cx="15.5" cy="16.5" r="1.1" fill="currentColor" stroke="none" />
     </svg>
   );
 }
