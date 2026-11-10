@@ -12,7 +12,13 @@ export function splitLyrics(text) {
   let refrao = "";
 
   raw.split(/\n{2,}/).forEach((chunk, index, chunks) => {
-    if (refrao && index > 0 && chunks[index - 1] && REFRAIN_LABEL.test(chunks[index - 1].split("\n")[0].trim()) && chunks[index - 1].split("\n").length === 1) {
+    if (
+      refrao &&
+      index > 0 &&
+      chunks[index - 1] &&
+      REFRAIN_LABEL.test(chunks[index - 1].split("\n")[0].trim()) &&
+      chunks[index - 1].split("\n").length === 1
+    ) {
       return;
     }
     const lines = chunk.split("\n");
@@ -69,11 +75,11 @@ function ChordStanza({ lines, italic }) {
       {lines.map((line, index) => (
         <div key={index} className="space-y-0.5">
           {line.chord.trim() ? (
-            <p className="whitespace-pre font-mono text-[0.92em] font-semibold leading-tight text-pine">
+            <p className="whitespace-pre-wrap font-lyric text-[0.92em] font-semibold leading-tight text-pine">
               {line.chord}
             </p>
           ) : null}
-          <p className={`whitespace-pre-wrap font-mono leading-snug ${italic ? "italic" : ""}`}>
+          <p className={`whitespace-pre-wrap ${italic ? "italic" : ""}`}>
             {line.text}
           </p>
         </div>
@@ -138,6 +144,8 @@ export default function Lyrics({
   refrao,
   vozesLetra,
   vozesRefrao,
+  letraVozes,
+  vozesArranjo,
   cifraLetra,
   cifraRefrao,
   cronologica,
@@ -152,28 +160,26 @@ export default function Lyrics({
 
   return (
     <article
-      className={`space-y-6 px-5 py-6 leading-relaxed ${
-        showChords ? "font-mono" : "text-center font-lyric"
-      }`}
+      className="space-y-6 px-5 py-6 text-center font-lyric leading-relaxed"
       style={{ fontSize: `${fontSize}px` }}
     >
       {showChords ? (
-        <div className="mx-auto w-fit max-w-full space-y-6 text-left">
-          <ChordedBody
-            letra={letra}
-            refrao={cleanRefrao}
-            cifraLetra={cifraLetra}
-            cifraRefrao={cifraRefrao}
-            lead={lead}
-            repeated={repeated}
-          />
-        </div>
+        <ChordedBody
+          letra={letra}
+          refrao={cleanRefrao}
+          cifraLetra={cifraLetra}
+          cifraRefrao={cifraRefrao}
+          lead={lead}
+          repeated={repeated}
+        />
       ) : (
         <VoicedBody
           letra={letra}
           refrao={cleanRefrao}
           vozesLetra={vozesLetra}
           vozesRefrao={vozesRefrao}
+          letraVozes={letraVozes}
+          vozesArranjo={vozesArranjo}
           lead={lead}
           repeated={repeated}
           showVoices={showVoices}
@@ -183,7 +189,29 @@ export default function Lyrics({
   );
 }
 
-function VoicedBody({ letra, refrao, vozesLetra, vozesRefrao, lead, repeated, showVoices }) {
+function VoicedBody({
+  letra,
+  refrao,
+  vozesLetra,
+  vozesRefrao,
+  letraVozes,
+  vozesArranjo,
+  lead,
+  repeated,
+  showVoices,
+}) {
+  const hasFullVoicedSong = showVoices && Boolean(String(letraVozes ?? "").trim());
+  if (hasFullVoicedSong) {
+    const fullStanzas = stanzasOf(letraVozes, vozesArranjo);
+    return (
+      <>
+        {fullStanzas.map((stanza, index) => (
+          <Stanza key={index} lines={stanza} showVoices={showVoices} />
+        ))}
+      </>
+    );
+  }
+
   const verses = stanzasOf(letra, vozesLetra);
   const chorus = stanzasOf(refrao, vozesRefrao).flat();
   const showLead = lead && chorus.length > 0;

@@ -4,7 +4,6 @@ import { deleteSong, getSong, messageForSongError } from "@/api/songs.js";
 import Lyrics from "@/components/Lyrics.jsx";
 import MarqueeText from "@/components/MarqueeText.jsx";
 import SongScroll from "@/components/SongScroll.jsx";
-import ThemeButton from "@/components/ThemeButton.jsx";
 import TransposeBar from "@/components/TransposeBar.jsx";
 import {
   detectSongKey,
@@ -19,9 +18,11 @@ import {
   writeFontSize,
   writeShowChronological,
 } from "@/lib/songs.js";
+import { setTheme, useTheme } from "@/lib/theme.js";
+import { songHasVoices } from "@/lib/voices.js";
 
 const barItem =
-  "flex h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine";
+  "flex h-14 landscape-mobile:h-10 flex-col landscape-mobile:flex-row items-center justify-center gap-0.5 landscape-mobile:gap-1.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine";
 const barOn = "text-pine";
 const barOff = "text-ink-soft hover:text-ink";
 const barDisabled = "cursor-not-allowed text-ink-soft/45";
@@ -36,13 +37,24 @@ export default function SongPage() {
   const [error, setError] = useState("");
   const [fontSize, setFontSize] = useState(readFontSize);
   const [showChronological, setShowChronological] = useState(readShowChronological);
+  const [showVoices, setShowVoices] = useState(false);
   const [showChords, setShowChords] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [transpose, setTranspose] = useState(0);
+  const [selectedKey, setSelectedKey] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const theme = useTheme();
+  const hasVoices = songHasVoices(song);
+  const lockLyricsToVoices = hasVoices && Boolean(song?.somenteVozes);
+  const activeVoices = (showVoices || lockLyricsToVoices) && !showChords;
   const hasChords = songHasChords(song);
+  const hasChronology = Boolean(song?.cronologica) && Boolean(String(song?.refrao || "").trim());
   const baseKey = detectSongKey(song?.cifraLetra, song?.cifraRefrao);
-  const currentKey = baseKey ? transposeKeyLabel(baseKey, transpose) : "";
+  const currentKey =
+    transpose === 0
+      ? baseKey
+      : selectedKey || (baseKey ? transposeKeyLabel(baseKey, transpose) : "");
   const preferFlats = String(currentKey || baseKey || "").includes("b");
   const cifraLetraView = showChords
     ? transposeChordLines(song?.cifraLetra, transpose, preferFlats)
@@ -58,8 +70,11 @@ export default function SongPage() {
       .then((data) => {
         if (!active) return;
         setSong(data);
+        setShowVoices(songHasVoices(data) && Boolean(data?.somenteVozes));
         setShowChords(false);
+        setShowSettings(false);
         setTranspose(0);
+        setSelectedKey("");
         setStatus("ready");
       })
       .catch((err) => {
@@ -98,11 +113,11 @@ export default function SongPage() {
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="shrink-0 border-b border-line bg-card/95 px-2 py-2 backdrop-blur">
+      <header className="shrink-0 border-b border-line bg-card/95 px-2 py-2 landscape-mobile:py-1 backdrop-blur">
         <div className="flex items-center gap-1">
           <Link
             to="/"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink-soft hover:bg-paper hover:text-ink"
+            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full text-ink-soft hover:bg-paper hover:text-ink"
             aria-label="Voltar à lista"
           >
             <span aria-hidden className="text-xl leading-none">
@@ -124,29 +139,22 @@ export default function SongPage() {
               <p className="text-sm font-medium">Coletânea</p>
             )}
           </div>
-          <div className="flex shrink-0 items-center">
-            <div className="inline-flex h-10 items-center" role="group" aria-label="Tamanho da letra">
-              <button
-                type="button"
-                className="inline-flex h-8 min-w-8 items-center justify-center px-1 text-sm font-medium text-ink-soft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:text-ink-soft/35"
-                aria-label="Diminuir letra"
-                disabled={fontSize <= fontLimits.min}
-                onClick={() => changeFont(-2)}
-              >
-                A−
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-8 min-w-8 items-center justify-center px-1 text-sm font-medium text-ink-soft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:text-ink-soft/35"
-                aria-label="Aumentar letra"
-                disabled={fontSize >= fontLimits.max}
-                onClick={() => changeFont(2)}
-              >
-                A+
-              </button>
-            </div>
-            <ThemeButton />
-          </div>
+          <button
+            type="button"
+            disabled
+            aria-label="Reproduzir música (indisponível)"
+            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-ink-soft/45"
+          >
+            <PlayIcon />
+          </button>
+          <button
+            type="button"
+            disabled
+            aria-label="Informações da música (indisponível)"
+            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-ink-soft/45"
+          >
+            <InfoIcon />
+          </button>
         </div>
       </header>
 
@@ -171,11 +179,13 @@ export default function SongPage() {
             refrao={song.refrao}
             vozesLetra={song.vozesLetra}
             vozesRefrao={song.vozesRefrao}
+            letraVozes={song.letraVozes}
+            vozesArranjo={song.vozesArranjo}
             cifraLetra={cifraLetraView}
             cifraRefrao={cifraRefraoView}
             cronologica={Boolean(song.cronologica) && showChronological}
             refraoPrimeiro={Boolean(song.refraoPrimeiro)}
-            showVoices={!showChords}
+            showVoices={activeVoices}
             showChords={showChords && hasChords}
             fontSize={fontSize}
           />
@@ -243,37 +253,181 @@ export default function SongPage() {
           cifraLetra={song.cifraLetra}
           cifraRefrao={song.cifraRefrao}
           semitones={transpose}
-          onChange={setTranspose}
+          selectedKey={selectedKey}
+          onChange={(nextSemitones, nextKey = "") => {
+            setTranspose(nextSemitones);
+            setSelectedKey(nextSemitones === 0 ? "" : nextKey);
+          }}
         />
+      ) : null}
+
+      {song && showSettings ? (
+        <div
+          role="region"
+          aria-label="Menu de configuração"
+          className="space-y-3 landscape-mobile:space-y-2 landscape-mobile:max-h-[48dvh] landscape-mobile:overflow-y-auto border-t border-line bg-card px-4 py-3 landscape-mobile:py-2"
+        >
+          {/* 1. Tamanho da letra */}
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs font-medium text-ink-soft">Tamanho da letra</span>
+            <div
+              className="inline-flex h-8 items-center rounded-full border border-line bg-paper p-0.5"
+              role="group"
+              aria-label="Tamanho da letra"
+            >
+              <button
+                type="button"
+                className="inline-flex h-7 min-w-9 items-center justify-center rounded-full px-2 text-xs font-semibold text-ink hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-35"
+                aria-label="Diminuir letra"
+                disabled={fontSize <= fontLimits.min}
+                onClick={() => changeFont(-2)}
+              >
+                A−
+              </button>
+              <span className="min-w-[2.75rem] text-center font-mono text-xs font-medium text-ink-soft tabular-nums">
+                {fontSize}px
+              </span>
+              <button
+                type="button"
+                className="inline-flex h-7 min-w-9 items-center justify-center rounded-full px-2 text-xs font-semibold text-ink hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-35"
+                aria-label="Aumentar letra"
+                disabled={fontSize >= fontLimits.max}
+                onClick={() => changeFont(2)}
+              >
+                A+
+              </button>
+            </div>
+          </div>
+
+          {/* 2. Alterar tema */}
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-xs font-medium text-ink-soft">Tema</span>
+            <div
+              className="inline-flex h-8 items-center rounded-full border border-line bg-paper p-0.5"
+              role="group"
+              aria-label="Tema do aplicativo"
+            >
+              <button
+                type="button"
+                aria-pressed={theme === "light"}
+                onClick={() => setTheme("light")}
+                className={`inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+                  theme === "light"
+                    ? "bg-pine text-white shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Claro
+              </button>
+              <button
+                type="button"
+                aria-pressed={theme === "dark"}
+                onClick={() => setTheme("dark")}
+                className={`inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+                  theme === "dark"
+                    ? "bg-pine text-white shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Escuro
+              </button>
+            </div>
+          </div>
+
+          {/* 3. Habilitar e desabilitar cronologia */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">Cronologia</span>
+              <span className="block truncate text-[11px] text-ink-soft/75">
+                {hasChronology
+                  ? "Repetir refrão depois de cada estrofe"
+                  : "Esta música não possui refrão cronológico"}
+              </span>
+            </div>
+            <div
+              className="inline-flex h-8 shrink-0 items-center rounded-full border border-line bg-paper p-0.5"
+              role="group"
+              aria-label="Ordem cronológica"
+            >
+              <button
+                type="button"
+                disabled={!hasChronology}
+                aria-pressed={hasChronology && showChronological}
+                onClick={() => {
+                  setShowChronological(true);
+                  writeShowChronological(true);
+                }}
+                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-40 ${
+                  hasChronology && showChronological
+                    ? "bg-pine text-white shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Ativada
+              </button>
+              <button
+                type="button"
+                disabled={!hasChronology}
+                aria-pressed={!hasChronology || !showChronological}
+                onClick={() => {
+                  setShowChronological(false);
+                  writeShowChronological(false);
+                }}
+                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-40 ${
+                  hasChronology && !showChronological
+                    ? "bg-pine text-white shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Desativada
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       {song ? (
         <nav
           aria-label="Controles da música"
-          className="grid shrink-0 grid-cols-3 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
+          className="grid shrink-0 grid-cols-4 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
         >
-          <button
-            type="button"
-            disabled
-            className={`${barItem} ${barDisabled}`}
-            aria-label="Vozes em breve"
-          >
-            <VoicesPartsIcon />
-            Vozes
-          </button>
+          {lockLyricsToVoices ? (
+            <button
+              type="button"
+              disabled
+              className={`${barItem} ${barDisabled}`}
+              aria-label="Letra bloqueada quando somente vozes está ativado"
+            >
+              <LyricIcon />
+              Letra
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={`${barItem} ${!showChords && !activeVoices ? barOn : barOff}`}
+              aria-pressed={!showChords && !activeVoices}
+              aria-label="Ver letra"
+              onClick={() => {
+                setShowChords(false);
+                setShowVoices(false);
+                setTranspose(0);
+                setSelectedKey("");
+              }}
+            >
+              <LyricIcon />
+              Letra
+            </button>
+          )}
           {hasChords ? (
             <button
               type="button"
               className={`${barItem} ${showChords ? barOn : barOff}`}
               aria-pressed={showChords}
-              aria-label={showChords ? "Ver letra sem cifra" : "Ver música cifrada"}
-              onClick={() =>
-                setShowChords((current) => {
-                  const next = !current;
-                  if (!next) setTranspose(0);
-                  return next;
-                })
-              }
+              aria-label="Ver cifra"
+              onClick={() => {
+                setShowChords(true);
+                setShowVoices(false);
+              }}
             >
               <ChordIcon />
               Cifra
@@ -289,40 +443,67 @@ export default function SongPage() {
               Cifra
             </button>
           )}
-          {song.cronologica && String(song.refrao || "").trim() ? (
+          {hasVoices ? (
             <button
               type="button"
-              className={`${barItem} ${showChronological ? barOn : barOff}`}
-              aria-pressed={showChronological}
-              aria-label={
-                showChronological ? "Refrão depois de cada estrofe" : "Refrão só no final"
-              }
-              onClick={() =>
-                setShowChronological((current) => {
-                  const next = !current;
-                  writeShowChronological(next);
-                  return next;
-                })
-              }
+              className={`${barItem} ${activeVoices ? barOn : barOff}`}
+              aria-pressed={activeVoices}
+              aria-label="Ver divisão de vozes"
+              onClick={() => {
+                setShowChords(false);
+                setTranspose(0);
+                setSelectedKey("");
+                setShowVoices(true);
+              }}
             >
-              <ChronologyIcon />
-              Cronologia
+              <VoicesPartsIcon />
+              Vozes
             </button>
           ) : (
             <button
               type="button"
               disabled
               className={`${barItem} ${barDisabled}`}
-              aria-label="Esta música não tem refrão cronológico"
+              aria-label="Esta música não tem vozes configuradas"
             >
-              <ChronologyIcon />
-              Cronologia
+              <VoicesPartsIcon />
+              Vozes
             </button>
           )}
+          <button
+            type="button"
+            className={`${barItem} ${showSettings ? barOn : barOff}`}
+            aria-pressed={showSettings}
+            aria-expanded={showSettings}
+            aria-label="Configuração"
+            onClick={() => setShowSettings((current) => !current)}
+          >
+            <SettingsIcon />
+            Configuração
+          </button>
         </nav>
       ) : null}
       </div>
     </div>
+  );
+}
+
+function LyricIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-5 w-5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 7h14" />
+      <path d="M7 12h10" />
+      <path d="M6 17h12" />
+    </svg>
   );
 }
 
@@ -358,7 +539,7 @@ function ChordIcon() {
   );
 }
 
-function ChronologyIcon() {
+function SettingsIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -370,13 +551,8 @@ function ChronologyIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M7 5.5v13" />
-      <circle cx="7" cy="6" r="1.35" fill="currentColor" stroke="none" />
-      <circle cx="7" cy="12" r="1.35" fill="currentColor" stroke="none" />
-      <circle cx="7" cy="18" r="1.35" fill="currentColor" stroke="none" />
-      <path d="M11 6h7" />
-      <path d="M11 12h7" />
-      <path d="M11 18h5" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
     </svg>
   );
 }
@@ -396,6 +572,43 @@ function TrashIcon() {
       <path d="M4 7h16" />
       <path d="M9 7V5h6v2" />
       <path d="M7 7l1 12h8l1-12" />
+    </svg>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-5 w-5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <polygon points="10.2,8.5 16.2,12 10.2,15.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-5 w-5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5" />
+      <circle cx="12" cy="8" r="0.8" fill="currentColor" stroke="none" />
     </svg>
   );
 }

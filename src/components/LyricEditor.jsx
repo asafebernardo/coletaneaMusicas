@@ -27,15 +27,49 @@ function readEditor(root) {
   return { text, marks: mergeMarks(marks) };
 }
 
-function rangeOffsets(root, range) {
-  const before = (container, offset) => {
-    const probe = document.createRange();
-    probe.selectNodeContents(root);
-    probe.setEnd(container, offset);
-    return probe.toString().length;
+function offsetInRoot(root, targetContainer, targetOffset) {
+  let count = 0;
+  let found = false;
+
+  const walk = (node) => {
+    if (found) return;
+    if (node === targetContainer) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const raw = (node.nodeValue ?? "").slice(0, targetOffset);
+        count += raw.replace(/\r\n/g, "\n").replace(/\r/g, "\n").length;
+        found = true;
+        return;
+      }
+      const children = Array.from(node.childNodes);
+      for (let i = 0; i < Math.min(targetOffset, children.length); i += 1) {
+        walk(children[i]);
+        if (found) return;
+      }
+      found = true;
+      return;
+    }
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const value = (node.nodeValue ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      count += value.length;
+      return;
+    }
+    if (node.nodeName === "BR") {
+      count += 1;
+      return;
+    }
+    const block = node.nodeName === "DIV" || node.nodeName === "P";
+    if (block && count > 0) count += 1;
+    node.childNodes.forEach((child) => walk(child));
   };
-  const start = before(range.startContainer, range.startOffset);
-  const end = before(range.endContainer, range.endOffset);
+
+  walk(root);
+  return count;
+}
+
+function rangeOffsets(root, range) {
+  const start = offsetInRoot(root, range.startContainer, range.startOffset);
+  const end = offsetInRoot(root, range.endContainer, range.endOffset);
   return { start: Math.min(start, end), end: Math.max(start, end) };
 }
 
@@ -66,26 +100,44 @@ function selectionInside(root) {
   return root.contains(range.startContainer) && root.contains(range.endContainer);
 }
 
-export default function LyricEditor({ text, marks, placeholder, italic, label, onChange, minClass = "min-h-32" }) {
+export default function LyricEditor({
+  text,
+  marks,
+  placeholder,
+  italic,
+  label,
+  onChange,
+  showVoiceTools = true,
+  minClass = "min-h-32",
+}) {
   const editorRef = useRef(null);
+  const lastRangeRef = useRef(null);
   const [canPaint, setCanPaint] = useState(false);
 
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
-    editor.innerHTML = renderLyricHtml(text, marks);
-    // O texto seguinte fica no DOM. Regravar a cada tecla jogaria o cursor para o início.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (document.activeElement === editor) return;
+    const nextHtml = renderLyricHtml(text, marks);
+    if (editor.innerHTML !== nextHtml) {
+      editor.innerHTML = nextHtml;
+    }
+  }, [text, marks]);
 
   useEffect(() => {
+    if (!showVoiceTools) return undefined;
     const onSelection = () => {
       const editor = editorRef.current;
-      setCanPaint(Boolean(editor && selectionInside(editor)));
+      const inside = Boolean(editor && selectionInside(editor));
+      if (inside) {
+        const selection = window.getSelection();
+        lastRangeRef.current = rangeOffsets(editor, selection.getRangeAt(0));
+      }
+      setCanPaint(inside);
     };
     document.addEventListener("selectionchange", onSelection);
     return () => document.removeEventListener("selectionchange", onSelection);
-  }, []);
+  }, [showVoiceTools]);
 
   const publish = () => {
     const editor = editorRef.current;
@@ -95,15 +147,22 @@ export default function LyricEditor({ text, marks, placeholder, italic, label, o
 
   const apply = (voice) => {
     const editor = editorRef.current;
+    if (!editor) return;
     const selection = window.getSelection();
-    if (!editor || !selection || selection.rangeCount === 0 || !selectionInside(editor)) return;
     const current = readEditor(editor);
-    const { start, end } = rangeOffsets(editor, selection.getRangeAt(0));
-    if (end <= start) return;
+    let offsets = null;
+    if (selection && selection.rangeCount > 0 && selectionInside(editor)) {
+      offsets = rangeOffsets(editor, selection.getRangeAt(0));
+    } else if (lastRangeRef.current) {
+      offsets = lastRangeRef.current;
+    }
+    if (!offsets || offsets.end <= offsets.start) return;
+    const { start, end } = offsets;
     const nextMarks = paintRange(current.marks, start, end, voice);
     editor.innerHTML = renderLyricHtml(current.text, nextMarks);
     setCaret(editor, end);
     onChange({ text: current.text, marks: nextMarks });
+    lastRangeRef.current = null;
     setCanPaint(false);
   };
 
@@ -141,23 +200,29 @@ export default function LyricEditor({ text, marks, placeholder, italic, label, o
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <PaintButton label="Homens" tone="bg-[#1d4e9e]" disabled={!canPaint} onPaint={() => apply("homens")} />
-        <PaintButton label="Mulheres" tone="bg-[#b4236a]" disabled={!canPaint} onPaint={() => apply("mulheres")} />
-        <button
-          type="button"
-          className={`h-8 rounded-full border border-line px-3 text-xs text-ink-soft hover:text-ink ${
-            canPaint ? "" : "opacity-40"
-          }`}
-          onPointerDown={(event) => {
-            event.preventDefault();
-            apply("");
-          }}
-        >
-          Limpar
-        </button>
-      </div>
-      <p className="text-center text-xs text-ink-soft">Selecione uma palavra ou uma linha e aplique a cor.</p>
+      {showVoiceTools ? (
+        <>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <PaintButton label="Homens" tone="bg-[#1d4e9e]" disabled={!canPaint} onPaint={() => apply("homens")} />
+            <PaintButton label="Mulheres" tone="bg-[#b4236a]" disabled={!canPaint} onPaint={() => apply("mulheres")} />
+            <button
+              type="button"
+              className={`h-8 rounded-full border border-line px-3 text-xs text-ink-soft hover:text-ink ${
+                canPaint ? "" : "opacity-40"
+              }`}
+              onPointerDown={(event) => {
+                event.preventDefault();
+                apply("");
+              }}
+            >
+              Limpar
+            </button>
+          </div>
+          <p className="text-center text-xs text-ink-soft">
+            Selecione uma palavra ou uma linha e aplique a cor.
+          </p>
+        </>
+      ) : null}
       <div
         ref={editorRef}
         className={`lyric-editor ${minClass} w-full whitespace-pre-wrap rounded-xl border border-line bg-paper px-3 py-3 text-center font-lyric leading-relaxed outline-none focus:ring-2 focus:ring-pine ${

@@ -393,12 +393,160 @@
   {
     "id": 32,
     "titulo": "Buscai primeiro o Reino de Deus",
-    "letra": "Buscai primeiro o Reino de Deus e a sua justiça\nE todas as coisas vos serão acrescentadas,\nAlelu- aleluia.\n\nNão só de pão o homem viverá, mas de toda palavra\nQue procede da boca de Deus.\nAlelu- aleluia.\n\nPedi, pedi e dar-se-vos-á, buscai e achareis,\nBatei, batei e abrir-se-vos--a.\nAlelu- aleluia.",
+    "letra": "Buscai primeiro o Reino de Deus\ne a sua justiça\nE todas as coisas vos serão acrescentadas,\nAlelu- aleluia.\n\nNão só de pão o homem viverá,\nmas de toda palavra\nQue procede da boca de Deus.\nAlelu- aleluia.\n\nPedi, pedi e dar-se-vos-á,\nbuscai e achareis,\nBatei, batei e abrir-se-vos--a.\nAlelu- aleluia.",
     "refrao": "Aleluia, aleluia, aleluia, alelu- aleluia.",
     "cronologica": true,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "Buscai primeiro o Reino de Deus\ne a sua justiça\nE todas as coisas vos serão acrescentadas,\nAlelu- aleluia.\n\nBuscai primeiro o Reino de Deus\nAleluia\ne a sua justiça\nAleluia\nE todas as coisas vos serão acrescentadas,\nAlelu- aleluia.\n\nNão só de pão o homem viverá,\nAleluia\nmas de toda palavra\nAleluia\nQue procede da boca de Deus.\nAlelu- aleluia.\n\nNão só de pão o homem viverá,\nAleluia\nmas de toda palavra\nAleluia\nQue procede da boca de Deus.\nAlelu- aleluia.\n\nPedi, pedi e dar-se-vos-á,\nAleluia\nbuscai e achareis,\nAleluia\nBatei, batei e abrir-se-vos--a.\nAlelu- aleluia.\n\nPedi, pedi e dar-se-vos-á,\nAleluia\nbuscai e achareis,\nAleluia\nBatei, batei e abrir-se-vos--a.\nAlelu- aleluia.\n\nAleluia, aleluia, aleluia\nAlelu- aleluia.",
+    "vozesArranjo": [
+      {
+        "start": 108,
+        "end": 140,
+        "voice": "homens"
+      },
+      {
+        "start": 140,
+        "end": 147,
+        "voice": "mulheres"
+      },
+      {
+        "start": 148,
+        "end": 163,
+        "voice": "homens"
+      },
+      {
+        "start": 164,
+        "end": 171,
+        "voice": "mulheres"
+      },
+      {
+        "start": 172,
+        "end": 214,
+        "voice": "homens"
+      },
+      {
+        "start": 232,
+        "end": 261,
+        "voice": "mulheres"
+      },
+      {
+        "start": 262,
+        "end": 269,
+        "voice": "homens"
+      },
+      {
+        "start": 270,
+        "end": 289,
+        "voice": "mulheres"
+      },
+      {
+        "start": 290,
+        "end": 297,
+        "voice": "homens"
+      },
+      {
+        "start": 298,
+        "end": 326,
+        "voice": "mulheres"
+      },
+      {
+        "start": 344,
+        "end": 373,
+        "voice": "homens"
+      },
+      {
+        "start": 374,
+        "end": 381,
+        "voice": "mulheres"
+      },
+      {
+        "start": 382,
+        "end": 401,
+        "voice": "homens"
+      },
+      {
+        "start": 402,
+        "end": 409,
+        "voice": "mulheres"
+      },
+      {
+        "start": 410,
+        "end": 438,
+        "voice": "homens"
+      },
+      {
+        "start": 456,
+        "end": 482,
+        "voice": "mulheres"
+      },
+      {
+        "start": 483,
+        "end": 490,
+        "voice": "homens"
+      },
+      {
+        "start": 491,
+        "end": 509,
+        "voice": "mulheres"
+      },
+      {
+        "start": 510,
+        "end": 517,
+        "voice": "homens"
+      },
+      {
+        "start": 518,
+        "end": 549,
+        "voice": "mulheres"
+      },
+      {
+        "start": 567,
+        "end": 593,
+        "voice": "homens"
+      },
+      {
+        "start": 594,
+        "end": 601,
+        "voice": "mulheres"
+      },
+      {
+        "start": 602,
+        "end": 620,
+        "voice": "homens"
+      },
+      {
+        "start": 621,
+        "end": 628,
+        "voice": "mulheres"
+      },
+      {
+        "start": 629,
+        "end": 660,
+        "voice": "homens"
+      }
+    ],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ]
   },
   {
     "id": 33,

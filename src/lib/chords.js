@@ -224,7 +224,7 @@ export function detectSongKey(cifraLetra, cifraRefrao) {
     for (const line of pool) {
       for (const part of tokenizeChordLine(line)) {
         if (part.chord?.root) {
-          const minor = /^m(?!aj)/i.test(part.chord.quality || "");
+          const minor = /^(?:m(?!aj)|min)/i.test(part.chord.quality || "") && !/^M/.test(part.chord.quality || "");
           return minor ? `${part.chord.root}m` : part.chord.root;
         }
       }
@@ -237,7 +237,11 @@ export function transposeKeyLabel(key, semitones, preferFlats) {
   if (!key) return "";
   const parsed = parseChord(key);
   if (!parsed || parsed.kind !== "chord") return key;
-  return transposeChordToken(key, semitones, preferFlats ?? parsed.preferFlats);
+  if (!semitones) return key;
+  const candidate = transposeChordToken(key, semitones, preferFlats ?? parsed.preferFlats);
+  if (preferFlats != null || KEY_OPTIONS.includes(candidate)) return candidate;
+  const alt = transposeChordToken(key, semitones, !parsed.preferFlats);
+  return KEY_OPTIONS.includes(alt) ? alt : candidate;
 }
 
 export const KEY_OPTIONS = [

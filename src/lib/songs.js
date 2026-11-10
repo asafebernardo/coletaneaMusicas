@@ -55,7 +55,9 @@ export function filterSongs(songs, query) {
 function songMatches(song, raw, q) {
   const numero = String(song.numero ?? "");
   const padded = numero.padStart(3, "0");
-  const texto = fold(`${song.titulo ?? ""}\n${song.letra ?? ""}\n${song.refrao ?? ""}`);
+  const texto = fold(
+    `${song.titulo ?? ""}\n${song.letra ?? ""}\n${song.refrao ?? ""}\n${song.letraVozes ?? ""}`,
+  );
   return numero.includes(raw) || padded.includes(raw) || texto.includes(q);
 }
 

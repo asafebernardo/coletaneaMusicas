@@ -117,13 +117,112 @@ export function packLyrics(text, marks) {
   return { text: kept, marks: mergeMarks(shifted) };
 }
 
+/**
+ * Monta o texto completo da música (estrofes + refrão) preservando as marcações
+ * de vozes existentes para o campo de edição de vozes da música inteira.
+ */
+export function buildFullSongLyrics({
+  letra = "",
+  refrao = "",
+  vozesLetra = [],
+  vozesRefrao = [],
+  refraoPrimeiro = false,
+  cronologica = false,
+}) {
+  const cleanLetra = packLyrics(letra, vozesLetra);
+  const cleanRefrao = packLyrics(refrao, vozesRefrao);
+
+  if (!cleanRefrao.text) {
+    return cleanLetra;
+  }
+  if (!cleanLetra.text) {
+    return cleanRefrao;
+  }
+
+  // Divide a letra em blocos de estrofes mantendo seus offsets originais
+  const raw = cleanLetra.text;
+  const verseBlocks = [];
+  const re = /\n{2,}/g;
+  let lastIndex = 0;
+  let match = re.exec(raw);
+  while (match) {
+    verseBlocks.push({
+      text: raw.slice(lastIndex, match.index),
+      start: lastIndex,
+      end: match.index,
+    });
+    lastIndex = match.index + match[0].length;
+    match = re.exec(raw);
+  }
+  verseBlocks.push({
+    text: raw.slice(lastIndex),
+    start: lastIndex,
+    end: raw.length,
+  });
+
+  const pieces = [];
+  const pushVerse = (block) => {
+    const marks = cleanLetra.marks
+      .filter((m) => m.end > block.start && m.start < block.end)
+      .map((m) => ({
+        start: Math.max(0, m.start - block.start),
+        end: Math.min(block.text.length, m.end - block.start),
+        voice: m.voice,
+      }));
+    pieces.push({ text: block.text, marks });
+  };
+  const pushRefrao = () => {
+    pieces.push({ text: cleanRefrao.text, marks: cleanRefrao.marks });
+  };
+
+  if (cronologica) {
+    if (refraoPrimeiro) pushRefrao();
+    verseBlocks.forEach((block) => {
+      pushVerse(block);
+      pushRefrao();
+    });
+  } else if (refraoPrimeiro) {
+    pushRefrao();
+    verseBlocks.forEach((block) => pushVerse(block));
+  } else {
+    if (verseBlocks[0]) pushVerse(verseBlocks[0]);
+    pushRefrao();
+    verseBlocks.slice(1).forEach((block) => pushVerse(block));
+  }
+
+  let combinedText = "";
+  const combinedMarks = [];
+  pieces.forEach((piece, idx) => {
+    if (idx > 0) combinedText += "\n\n";
+    const offset = combinedText.length;
+    combinedText += piece.text;
+    piece.marks.forEach((m) => {
+      combinedMarks.push({
+        start: m.start + offset,
+        end: m.end + offset,
+        voice: m.voice,
+      });
+    });
+  });
+
+  return {
+    text: combinedText,
+    marks: mergeMarks(combinedMarks),
+  };
+}
+
 export function hasMarkedVoices(marks) {
   if (!Array.isArray(marks)) return false;
   return marks.some((mark) => (typeof mark === "string" ? isVoice(mark) : isVoice(mark?.voice)));
 }
 
 export function songHasVoices(song) {
-  return hasMarkedVoices(song?.vozesLetra) || hasMarkedVoices(song?.vozesRefrao);
+  return (
+    Boolean(String(song?.letraVozes ?? "").trim()) ||
+    hasMarkedVoices(song?.vozesArranjo) ||
+    hasMarkedVoices(song?.vozesLetra) ||
+    hasMarkedVoices(song?.vozesRefrao)
+  );
 }
 
 export function stanzasOf(text, marks) {

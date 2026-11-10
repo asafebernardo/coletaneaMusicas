@@ -28,7 +28,7 @@ export default function ChordEditor({
 
   return (
     <div
-      className="space-y-1 rounded-xl border border-line bg-paper px-3 py-3"
+      className="space-y-1 rounded-xl border border-line bg-paper px-3 py-3 text-center font-lyric"
       role="group"
       aria-label={label}
     >
@@ -49,19 +49,19 @@ export default function ChordEditor({
               aria-label={`Cifra da linha: ${line}`}
               aria-invalid={invalid.length > 0}
               placeholder="C  Dm  G7"
-              className={`h-7 w-full border-0 bg-transparent px-0 font-mono text-sm font-semibold outline-none ring-0 placeholder:text-ink-soft/35 focus:ring-0 ${
+              className={`h-7 w-full border-0 bg-transparent px-0 text-center font-lyric text-sm font-semibold outline-none ring-0 placeholder:text-ink-soft/35 focus:ring-0 ${
                 invalid.length > 0 ? "text-danger" : "text-pine"
               }`}
             />
             <p
-              className={`whitespace-pre-wrap font-mono text-sm leading-snug text-ink ${
+              className={`whitespace-pre-wrap text-center font-lyric text-sm leading-snug text-ink ${
                 italic ? "italic" : ""
               }`}
             >
               {line}
             </p>
             {invalid.length > 0 ? (
-              <p className="text-[11px] leading-snug text-danger">
+              <p className="font-sans text-[11px] leading-snug text-danger">
                 Não reconhecido: {invalid.join(", ")}. Use acordes como C, Dm, F#m7, G7(9), C/E.
               </p>
             ) : null}

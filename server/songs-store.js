@@ -7,7 +7,7 @@ import { packLyrics } from "../src/lib/voices.js";
 
 /**
  * Catálogo local. Cada música é
- * { id, titulo, letra, refrao, cronologica, refraoPrimeiro, vozesLetra, vozesRefrao, cifraLetra, cifraRefrao }.
+ * { id, titulo, letra, refrao, cronologica, refraoPrimeiro, vozesLetra, vozesRefrao, letraVozes, vozesArranjo, cifraLetra, cifraRefrao }.
  * O número não fica gravado: é a posição do título em ordem alfabética.
  * A palavra "Refrão" não faz parte do texto: o app a mostra na leitura.
  * No ICER, MusicaLetra guarda só a letra; o refrão entra nesse campo na integração.
@@ -67,7 +67,9 @@ function presentSongs(songs) {
 
 export function validateSong(input) {
   const titulo = String(input?.titulo ?? "").trim();
-  const letraRaw = input?.letra;
+  const vozesPack = packLyrics(input?.letraVozes ?? "", input?.vozesArranjo);
+  const hasArranjoVoices = Boolean(vozesPack.text);
+  const letraRaw = String(input?.letra ?? "").trim() ? input?.letra : vozesPack.text;
   const refraoRaw = String(input?.refrao ?? "").replace(/^(?:refr[aã]o|coro)\s*:?\s*\n+/i, "");
   const letraPack = packLyrics(letraRaw, input?.vozesLetra);
   const refraoPack = packLyrics(refraoRaw, input?.vozesRefrao);
@@ -84,6 +86,9 @@ export function validateSong(input) {
   }
   const refraoPrimeiro = Boolean(input?.refraoPrimeiro) && Boolean(refrao);
   const cronologica = Boolean(input?.cronologica) && Boolean(refrao);
+  const somenteVozes =
+    Boolean(input?.somenteVozes) &&
+    (hasArranjoVoices || letraPack.marks.length > 0 || refraoPack.marks.length > 0);
   return {
     value: {
       titulo,
@@ -91,8 +96,11 @@ export function validateSong(input) {
       refrao,
       cronologica,
       refraoPrimeiro,
+      somenteVozes,
       vozesLetra: letraPack.marks,
       vozesRefrao: refraoPack.marks,
+      letraVozes: hasArranjoVoices ? vozesPack.text : "",
+      vozesArranjo: hasArranjoVoices ? vozesPack.marks : [],
       cifraLetra,
       cifraRefrao,
     },

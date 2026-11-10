@@ -26,6 +26,10 @@ export default {
       maxWidth: {
         phone: "28rem",
       },
+      screens: {
+        "landscape-mobile": { raw: "(orientation: landscape) and (max-height: 540px)" },
+        "desktop-card": { raw: "(min-width: 640px) and (min-height: 541px)" },
+      },
     },
   },
   plugins: [],
