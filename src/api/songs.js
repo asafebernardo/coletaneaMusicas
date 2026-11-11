@@ -1,4 +1,4 @@
-import { withNumbers } from "@/lib/songs.js";
+import { canManageSongs, withNumbers } from "@/lib/songs.js";
 
 /**
  * Cliente da API local com fallback estático para GitHub Pages.
@@ -53,7 +53,21 @@ export async function request(path, options = {}) {
   return data;
 }
 
+async function getStaticSong(id) {
+  const songs = await readStaticCatalog();
+  const found = songs.find((song) => Number(song.id) === Number(id));
+  if (!found) {
+    const notFound = new Error("nao_encontrada");
+    notFound.status = 404;
+    throw notFound;
+  }
+  return found;
+}
+
 export async function listSongs() {
+  if (!canManageSongs()) {
+    return readStaticCatalog();
+  }
   try {
     return await request("/api/songs");
   } catch {
@@ -62,20 +76,16 @@ export async function listSongs() {
 }
 
 export async function getSong(id) {
+  if (!canManageSongs()) {
+    return getStaticSong(id);
+  }
   try {
     return await request(`/api/songs/${id}`);
   } catch (err) {
     if (err?.status === 404 && err?.message === "nao_encontrada") {
       throw err;
     }
-    const songs = await readStaticCatalog();
-    const found = songs.find((song) => Number(song.id) === Number(id));
-    if (!found) {
-      const notFound = new Error("nao_encontrada");
-      notFound.status = 404;
-      throw notFound;
-    }
-    return found;
+    return getStaticSong(id);
   }
 }
 

@@ -12,6 +12,7 @@ import {
   transposeKeyLabel,
 } from "@/lib/chords.js";
 import {
+  canManageSongs,
   fontLimits,
   readFontSize,
   readShowChordsButton,
@@ -30,6 +31,7 @@ const barOff = "text-ink-soft hover:text-ink";
 const barDisabled = "cursor-not-allowed text-ink-soft/45";
 
 export default function SongPage() {
+  const canManage = canManageSongs();
   const { id } = useParams();
   const navigate = useNavigate();
   const numericId = Number(id);
@@ -373,7 +375,7 @@ export default function SongPage() {
       </SongScroll>
 
       <div className="relative shrink-0">
-      {confirmDelete ? (
+      {canManage && confirmDelete ? (
         <div className="shrink-0 border-t border-line bg-card px-4 py-3">
           <p className="text-sm">Apagar esta música do catálogo local?</p>
           <div className="mt-3 flex justify-end gap-2">
@@ -397,7 +399,7 @@ export default function SongPage() {
         </div>
       ) : null}
 
-      {song ? (
+      {canManage && song ? (
         <div className="pointer-events-none absolute bottom-full right-3 z-20 mb-3">
           <div className="pointer-events-auto inline-flex h-9 items-center rounded-full border border-line bg-card p-0.5 shadow-lg">
             <Link

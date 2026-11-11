@@ -5,6 +5,17 @@ export function fold(value) {
     .toLowerCase();
 }
 
+/**
+ * Permite criar, editar e apagar músicas apenas em ambiente local (localhost / dev),
+ * ocultando o CRUD quando publicado no GitHub Pages.
+ */
+export function canManageSongs() {
+  if (import.meta.env.DEV) return true;
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+}
+
 function compareTitles(a, b) {
   const byTitle = String(a.titulo ?? "").localeCompare(String(b.titulo ?? ""), "pt-BR", {
     sensitivity: "base",

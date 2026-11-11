@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import AppFrame from "@/components/AppFrame.jsx";
 import HomeLayout from "@/components/HomeLayout.jsx";
 import { isStandaloneMode } from "@/lib/pwa.js";
+import { canManageSongs } from "@/lib/songs.js";
 import AppInfoPage from "@/pages/AppInfoPage.jsx";
 import CatalogPage from "@/pages/CatalogPage.jsx";
 import CategoriesPage from "@/pages/CategoriesPage.jsx";
@@ -24,6 +25,7 @@ function readEnteredWeb() {
 }
 
 export default function App() {
+  const canManage = canManageSongs();
   const [enteredWeb, setEnteredWeb] = useState(readEnteredWeb);
   const navigate = useNavigate();
 
@@ -65,8 +67,14 @@ export default function App() {
           <Route path="/configuracoes" element={<SettingsPage />} />
           <Route path="*" element={<CatalogPage />} />
         </Route>
-        <Route path="/musicas/nova" element={<SongFormPage />} />
-        <Route path="/musicas/:id/editar" element={<SongFormPage />} />
+        <Route
+          path="/musicas/nova"
+          element={canManage ? <SongFormPage /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/musicas/:id/editar"
+          element={canManage ? <SongFormPage /> : <Navigate to="/" replace />}
+        />
         <Route path="/musicas/:id/info" element={<SongInfoPage />} />
         <Route path="/musicas/:id" element={<SongPage />} />
       </Routes>

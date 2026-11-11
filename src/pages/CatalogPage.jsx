@@ -2,9 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { listSongs, messageForSongError } from "@/api/songs.js";
 import MarqueeText from "@/components/MarqueeText.jsx";
-import { filterSongs, lyricExcerpt } from "@/lib/songs.js";
+import { canManageSongs, filterSongs, lyricExcerpt } from "@/lib/songs.js";
 
 export default function CatalogPage() {
+  const canManage = canManageSongs();
   const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [songs, setSongs] = useState([]);
@@ -54,12 +55,14 @@ export default function CatalogPage() {
             Coletâneas de Louvor
           </h1>
         </div>
-        <Link
-          to="/musicas/nova"
-          className="inline-flex h-9 items-center rounded-full bg-white px-3.5 text-sm font-semibold text-pine shadow-sm transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8"
-        >
-          Nova
-        </Link>
+        {canManage ? (
+          <Link
+            to="/musicas/nova"
+            className="inline-flex h-9 items-center rounded-full bg-white px-3.5 text-sm font-semibold text-pine shadow-sm transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8"
+          >
+            Nova
+          </Link>
+        ) : null}
         <button
           type="button"
           onClick={toggleSearch}
@@ -117,7 +120,9 @@ export default function CatalogPage() {
           </p>
           <p className="mx-auto mt-1 max-w-xs text-sm text-ink-soft">
             {songs.length === 0
-              ? "A coletânea começa com o catálogo local. Inclua a primeira letra em Nova."
+              ? canManage
+                ? "A coletânea começa com o catálogo local. Inclua a primeira letra em Nova."
+                : "Nenhuma música disponível no catálogo."
               : "Tente outro número, título ou trecho da letra."}
           </p>
         </div>
