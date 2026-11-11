@@ -160,7 +160,9 @@ export default function Lyrics({
 
   return (
     <article
-      className="space-y-6 px-5 py-6 text-center font-lyric leading-relaxed"
+      className={`space-y-6 px-5 py-6 font-lyric leading-relaxed ${
+        showChords ? "text-left" : "text-center"
+      }`}
       style={{ fontSize: `${fontSize}px` }}
     >
       {showChords ? (

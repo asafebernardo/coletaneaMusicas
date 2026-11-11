@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteSong, getSong, messageForSongError } from "@/api/songs.js";
 import Lyrics from "@/components/Lyrics.jsx";
@@ -14,8 +14,10 @@ import {
 import {
   fontLimits,
   readFontSize,
+  readShowChordsButton,
   readShowChronological,
   writeFontSize,
+  writeShowChordsButton,
   writeShowChronological,
 } from "@/lib/songs.js";
 import { setTheme, useTheme } from "@/lib/theme.js";
@@ -37,6 +39,7 @@ export default function SongPage() {
   const [error, setError] = useState("");
   const [fontSize, setFontSize] = useState(readFontSize);
   const [showChronological, setShowChronological] = useState(readShowChronological);
+  const [showChordsButton, setShowChordsButton] = useState(readShowChordsButton);
   const [showVoices, setShowVoices] = useState(false);
   const [showChords, setShowChords] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -44,7 +47,18 @@ export default function SongPage() {
   const [selectedKey, setSelectedKey] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [audioTime, setAudioTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const audioRef = useRef(null);
+  const timelineRef = useRef(null);
+  const seekingRef = useRef(false);
   const theme = useTheme();
+  const hasAudio = Boolean(song?.audioArquivo);
+  const audioUrl = hasAudio ? `/api/audios/${encodeURIComponent(song.audioArquivo)}` : "";
+  const progressPercent =
+    audioDuration > 0 ? Math.min(100, Math.max(0, (audioTime / audioDuration) * 100)) : 0;
   const hasVoices = songHasVoices(song);
   const lockLyricsToVoices = hasVoices && Boolean(song?.somenteVozes);
   const activeVoices = (showVoices || lockLyricsToVoices) && !showChords;
@@ -75,6 +89,10 @@ export default function SongPage() {
         setShowSettings(false);
         setTranspose(0);
         setSelectedKey("");
+        setIsPlaying(false);
+        setShowTimeline(false);
+        setAudioTime(0);
+        setAudioDuration(0);
         setStatus("ready");
       })
       .catch((err) => {
@@ -99,6 +117,66 @@ export default function SongPage() {
     });
   };
 
+  const toggleAudio = () => {
+    const audio = audioRef.current;
+    if (!audio || !hasAudio) return;
+    if (audio.paused) {
+      audio.play().catch(() => setIsPlaying(false));
+    } else {
+      audio.pause();
+    }
+  };
+
+  const seekToClientX = (clientX) => {
+    const bar = timelineRef.current;
+    const audio = audioRef.current;
+    if (!bar || !audio || !bar.clientWidth) return;
+    const duration = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : audioDuration;
+    if (!duration) return;
+    const rect = bar.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const nextTime = ratio * duration;
+    audio.currentTime = nextTime;
+    setAudioTime(nextTime);
+  };
+
+  const handleTimelinePointerDown = (event) => {
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    seekingRef.current = true;
+    seekToClientX(event.clientX);
+  };
+
+  const handleTimelinePointerMove = (event) => {
+    if (!seekingRef.current) return;
+    seekToClientX(event.clientX);
+  };
+
+  const handleTimelinePointerUp = (event) => {
+    if (!seekingRef.current) return;
+    seekingRef.current = false;
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const handleTimelineKeyDown = (event) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const duration = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : audioDuration;
+    if (!duration) return;
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      const next = Math.min(duration, audio.currentTime + 5);
+      audio.currentTime = next;
+      setAudioTime(next);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      const next = Math.max(0, audio.currentTime - 5);
+      audio.currentTime = next;
+      setAudioTime(next);
+    }
+  };
+
   const remove = async () => {
     setRemoving(true);
     try {
@@ -113,11 +191,11 @@ export default function SongPage() {
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="shrink-0 border-b border-line bg-card/95 px-2 py-2 landscape-mobile:py-1 backdrop-blur">
+      <header className="relative z-20 shrink-0 border-b border-pine-dark bg-pine px-2 py-2 text-white shadow-sm landscape-mobile:py-1">
         <div className="flex items-center gap-1">
           <Link
             to="/"
-            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full text-ink-soft hover:bg-paper hover:text-ink"
+            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label="Voltar à lista"
           >
             <span aria-hidden className="text-xl leading-none">
@@ -126,36 +204,117 @@ export default function SongPage() {
           </Link>
           <div className="min-w-0 flex-1 px-1">
             {song ? (
-              <h1 className="flex min-h-6 min-w-0 items-stretch gap-3">
+              <h1 className="flex min-h-6 min-w-0 items-stretch gap-3 text-white">
                 <span className="flex w-[3ch] shrink-0 items-center justify-end text-base font-semibold tabular-nums leading-tight">
                   {String(song.numero).padStart(3, "0")}
                 </span>
-                <span aria-hidden className="w-px shrink-0 self-stretch bg-ink-soft/35" />
+                <span aria-hidden className="w-px shrink-0 self-stretch bg-white/35" />
                 <span className="flex min-w-0 flex-1 items-center">
                   <MarqueeText text={song.titulo} className="text-base font-semibold leading-tight" />
                 </span>
               </h1>
             ) : (
-              <p className="text-sm font-medium">Coletânea</p>
+              <p className="text-sm font-medium text-white">Coletânea</p>
             )}
           </div>
-          <button
-            type="button"
-            disabled
-            aria-label="Reproduzir música (indisponível)"
-            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-ink-soft/45"
-          >
-            <PlayIcon />
-          </button>
-          <button
-            type="button"
-            disabled
-            aria-label="Informações da música (indisponível)"
-            className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-ink-soft/45"
-          >
-            <InfoIcon />
-          </button>
+          {hasAudio ? (
+            <button
+              type="button"
+              onClick={toggleAudio}
+              aria-pressed={isPlaying}
+              aria-label={isPlaying ? "Pausar demonstração" : "Reproduzir demonstração"}
+              className={`inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                isPlaying
+                  ? "bg-white text-pine shadow-sm"
+                  : "text-white/90 hover:bg-white/15 hover:text-white"
+              }`}
+            >
+              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled
+              aria-label="Reproduzir música (indisponível)"
+              className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-white/35"
+            >
+              <PlayIcon />
+            </button>
+          )}
+          {hasAudio ? (
+            <audio
+              ref={audioRef}
+              src={audioUrl}
+              preload="metadata"
+              onLoadedMetadata={(event) => {
+                const dur = event.currentTarget.duration;
+                if (Number.isFinite(dur) && dur > 0) setAudioDuration(dur);
+              }}
+              onDurationChange={(event) => {
+                const dur = event.currentTarget.duration;
+                if (Number.isFinite(dur) && dur > 0) setAudioDuration(dur);
+              }}
+              onTimeUpdate={(event) => {
+                if (!seekingRef.current) {
+                  setAudioTime(event.currentTarget.currentTime);
+                }
+              }}
+              onPlay={() => {
+                setIsPlaying(true);
+                setShowTimeline(true);
+              }}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false);
+                setShowTimeline(false);
+                setAudioTime(0);
+              }}
+              className="hidden"
+            />
+          ) : null}
+          {song ? (
+            <Link
+              to={`/musicas/${song.id}/info`}
+              aria-label="Informações da música"
+              className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full text-white/90 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <InfoIcon />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              aria-label="Informações da música (indisponível)"
+              className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-white/35"
+            >
+              <InfoIcon />
+            </button>
+          )}
         </div>
+        {hasAudio && showTimeline ? (
+          <div
+            ref={timelineRef}
+            role="slider"
+            tabIndex={0}
+            aria-label="Linha do tempo da música"
+            aria-valuemin={0}
+            aria-valuemax={Math.round(audioDuration || 0)}
+            aria-valuenow={Math.round(audioTime || 0)}
+            onPointerDown={handleTimelinePointerDown}
+            onPointerMove={handleTimelinePointerMove}
+            onPointerUp={handleTimelinePointerUp}
+            onPointerCancel={handleTimelinePointerUp}
+            onKeyDown={handleTimelineKeyDown}
+            className="group absolute inset-x-0 -bottom-2 z-30 flex h-4 cursor-pointer touch-none select-none items-center focus-visible:outline-none"
+          >
+            <div className="relative h-1 w-full bg-black/30 transition-[height] group-hover:h-1.5 group-active:h-1.5">
+              <div
+                className="h-full bg-white"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        ) : null}
       </header>
 
       <SongScroll>
@@ -383,13 +542,64 @@ export default function SongPage() {
               </button>
             </div>
           </div>
+
+          {/* 4. Visualizar/ocultar botão de Cifras */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">Botão de Cifras</span>
+              <span className="block truncate text-[11px] text-ink-soft/75">
+                Visualizar ou ocultar o botão Cifra nas músicas
+              </span>
+            </div>
+            <div
+              className="inline-flex h-8 shrink-0 items-center rounded-full border border-line bg-paper p-0.5"
+              role="group"
+              aria-label="Botão de Cifras"
+            >
+              <button
+                type="button"
+                aria-pressed={showChordsButton}
+                onClick={() => {
+                  setShowChordsButton(true);
+                  writeShowChordsButton(true);
+                }}
+                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+                  showChordsButton
+                    ? "bg-pine text-white shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Visível
+              </button>
+              <button
+                type="button"
+                aria-pressed={!showChordsButton}
+                onClick={() => {
+                  setShowChordsButton(false);
+                  writeShowChordsButton(false);
+                  setShowChords(false);
+                  setTranspose(0);
+                  setSelectedKey("");
+                }}
+                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+                  !showChordsButton
+                    ? "bg-pine text-white shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Oculto
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
 
       {song ? (
         <nav
           aria-label="Controles da música"
-          className="grid shrink-0 grid-cols-4 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
+          className={`grid shrink-0 ${
+            showChordsButton ? "grid-cols-4" : "grid-cols-3"
+          } border-t border-line bg-card pb-[env(safe-area-inset-bottom)]`}
         >
           {lockLyricsToVoices ? (
             <button
@@ -418,31 +628,33 @@ export default function SongPage() {
               Letra
             </button>
           )}
-          {hasChords ? (
-            <button
-              type="button"
-              className={`${barItem} ${showChords ? barOn : barOff}`}
-              aria-pressed={showChords}
-              aria-label="Ver cifra"
-              onClick={() => {
-                setShowChords(true);
-                setShowVoices(false);
-              }}
-            >
-              <ChordIcon />
-              Cifra
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className={`${barItem} ${barDisabled}`}
-              aria-label="Esta música não tem cifra"
-            >
-              <ChordIcon />
-              Cifra
-            </button>
-          )}
+          {showChordsButton ? (
+            hasChords ? (
+              <button
+                type="button"
+                className={`${barItem} ${showChords ? barOn : barOff}`}
+                aria-pressed={showChords}
+                aria-label="Ver cifra"
+                onClick={() => {
+                  setShowChords(true);
+                  setShowVoices(false);
+                }}
+              >
+                <ChordIcon />
+                Cifra
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className={`${barItem} ${barDisabled}`}
+                aria-label="Esta música não tem cifra"
+              >
+                <ChordIcon />
+                Cifra
+              </button>
+            )
+          ) : null}
           {hasVoices ? (
             <button
               type="button"
@@ -590,6 +802,25 @@ function PlayIcon() {
     >
       <circle cx="12" cy="12" r="9" />
       <polygon points="10.2,8.5 16.2,12 10.2,15.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function PauseIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden
+      className="h-5 w-5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <rect x="9.5" y="8.5" width="1.8" height="7" rx="0.6" fill="currentColor" stroke="none" />
+      <rect x="12.7" y="8.5" width="1.8" height="7" rx="0.6" fill="currentColor" stroke="none" />
     </svg>
   );
 }

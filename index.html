@@ -4,12 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f3efe6" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Coletânea" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/C.L.png" />
     <script>
       (function () {
         try {
           var theme = localStorage.getItem("coletanea-theme");
           if (theme !== "dark") theme = "light";
           document.documentElement.dataset.theme = theme;
+          var accent = localStorage.getItem("coletanea-accent") || "verde";
+          document.documentElement.dataset.accent = accent;
           var meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#f3efe6");
         } catch (e) {}

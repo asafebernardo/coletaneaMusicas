@@ -28,7 +28,7 @@ export default function ChordEditor({
 
   return (
     <div
-      className="space-y-1 rounded-xl border border-line bg-paper px-3 py-3 text-center font-lyric"
+      className="space-y-1 rounded-xl border border-line bg-paper px-3 py-3 text-left font-lyric"
       role="group"
       aria-label={label}
     >
@@ -49,12 +49,12 @@ export default function ChordEditor({
               aria-label={`Cifra da linha: ${line}`}
               aria-invalid={invalid.length > 0}
               placeholder="C  Dm  G7"
-              className={`h-7 w-full border-0 bg-transparent px-0 text-center font-lyric text-sm font-semibold outline-none ring-0 placeholder:text-ink-soft/35 focus:ring-0 ${
+              className={`h-7 w-full border-0 bg-transparent px-0 text-left font-lyric text-sm font-semibold outline-none ring-0 placeholder:text-ink-soft/35 focus:ring-0 ${
                 invalid.length > 0 ? "text-danger" : "text-pine"
               }`}
             />
             <p
-              className={`whitespace-pre-wrap text-center font-lyric text-sm leading-snug text-ink ${
+              className={`whitespace-pre-wrap text-left font-lyric text-sm leading-snug text-ink ${
                 italic ? "italic" : ""
               }`}
             >

@@ -17,6 +17,36 @@
   --voice-women: 184 52 116;
 }
 
+:root[data-accent="amarelo"] {
+  --pine: 161 106 18;
+  --pine-dark: 128 83 12;
+}
+
+:root[data-accent="azul"] {
+  --pine: 30 68 118;
+  --pine-dark: 21 50 89;
+}
+
+:root[data-accent="laranja"] {
+  --pine: 176 74 28;
+  --pine-dark: 138 56 19;
+}
+
+:root[data-accent="roxo"] {
+  --pine: 94 53 126;
+  --pine-dark: 71 38 97;
+}
+
+:root[data-accent="rosa"] {
+  --pine: 156 47 93;
+  --pine-dark: 120 34 71;
+}
+
+:root[data-accent="cinza"] {
+  --pine: 68 80 94;
+  --pine-dark: 50 60 72;
+}
+
 :root[data-theme="dark"] {
   color-scheme: dark;
   --paper: 0 0 0;
@@ -30,6 +60,36 @@
   --danger-soft: 68 32 30;
   --voice-men: 147 197 253;
   --voice-women: 249 168 212;
+}
+
+:root[data-theme="dark"][data-accent="amarelo"] {
+  --pine: 202 138 4;
+  --pine-dark: 161 106 18;
+}
+
+:root[data-theme="dark"][data-accent="azul"] {
+  --pine: 59 118 196;
+  --pine-dark: 42 91 158;
+}
+
+:root[data-theme="dark"][data-accent="laranja"] {
+  --pine: 214 98 44;
+  --pine-dark: 176 74 28;
+}
+
+:root[data-theme="dark"][data-accent="roxo"] {
+  --pine: 139 92 184;
+  --pine-dark: 110 68 150;
+}
+
+:root[data-theme="dark"][data-accent="rosa"] {
+  --pine: 198 75 128;
+  --pine-dark: 163 54 101;
+}
+
+:root[data-theme="dark"][data-accent="cinza"] {
+  --pine: 112 132 156;
+  --pine-dark: 88 106 128;
 }
 
 html,

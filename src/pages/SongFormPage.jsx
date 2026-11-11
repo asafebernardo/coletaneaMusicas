@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { createSong, getSong, messageForSongError, updateSong } from "@/api/songs.js";
 import ChordEditor from "@/components/ChordEditor.jsx";
 import { splitLyrics } from "@/components/Lyrics.jsx";
 import LyricEditor from "@/components/LyricEditor.jsx";
-import ThemeButton from "@/components/ThemeButton.jsx";
 import VocalArrangementEditor from "@/components/VocalArrangementEditor.jsx";
 import { packChordLines, syncChordLines } from "@/lib/chords.js";
 import { buildFullSongLyrics, hasMarkedVoices, packLyrics } from "@/lib/voices.js";
 
 const emptyForm = {
   titulo: "",
+  compositor: "",
+  album: "",
+  anoLancamento: "",
+  adicionais: "",
+  audioArquivo: "",
+  audioNome: "",
+  audioDataUrl: "",
+  removeAudio: false,
   letra: "",
   refrao: "",
   cronologica: false,
@@ -55,6 +62,14 @@ function fieldsFromSong(song) {
 
   return {
     titulo: song.titulo || "",
+    compositor: song.compositor || "",
+    album: song.album || "",
+    anoLancamento: song.anoLancamento || "",
+    adicionais: song.adicionais || "",
+    audioArquivo: song.audioArquivo || "",
+    audioNome: song.audioNome || "",
+    audioDataUrl: "",
+    removeAudio: false,
     letra,
     refrao,
     cronologica,
@@ -69,13 +84,19 @@ function fieldsFromSong(song) {
   };
 }
 
+const VALID_TABS = new Set(["letra", "arranjo", "cifra", "info"]);
+
 export default function SongFormPage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const editing = id != null;
   const numericId = Number(id);
+  const initialTab = searchParams.get("aba");
   const [form, setForm] = useState(emptyForm);
-  const [contentTab, setContentTab] = useState("letra");
+  const [contentTab, setContentTab] = useState(
+    VALID_TABS.has(initialTab) ? initialTab : "letra",
+  );
   const [status, setStatus] = useState(editing ? "loading" : "ready");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -112,6 +133,33 @@ export default function SongFormPage() {
     setForm((current) => ({ ...current, ...updates }));
   };
 
+  const handleAudioChange = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = typeof reader.result === "string" ? reader.result : "";
+      if (!dataUrl) return;
+      setForm((current) => ({
+        ...current,
+        audioDataUrl: dataUrl,
+        audioNome: file.name,
+        removeAudio: false,
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearAudio = () => {
+    setForm((current) => ({
+      ...current,
+      audioDataUrl: "",
+      audioNome: "",
+      removeAudio: true,
+    }));
+  };
+
   const submit = async (event) => {
     event.preventDefault();
     setSaving(true);
@@ -124,6 +172,13 @@ export default function SongFormPage() {
 
     const payload = {
       titulo: form.titulo.trim(),
+      compositor: form.compositor.trim(),
+      album: form.album.trim(),
+      anoLancamento: form.anoLancamento.trim(),
+      adicionais: form.adicionais.trim(),
+      audioDataUrl: form.audioDataUrl || undefined,
+      audioNome: form.audioNome || undefined,
+      removeAudio: Boolean(form.removeAudio),
       letra: letraPack.text,
       refrao: refraoPack.text,
       cronologica: Boolean(form.cronologica) && Boolean(refraoPack.text),
@@ -149,38 +204,56 @@ export default function SongFormPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <header className="sticky top-0 z-10 flex shrink-0 items-center gap-1 border-b border-line bg-card/95 px-2 py-2 landscape-mobile:py-1 backdrop-blur">
+      <header className="sticky top-0 z-10 flex shrink-0 items-center gap-1 border-b border-pine-dark bg-pine px-2 py-2 text-white shadow-sm landscape-mobile:py-1">
         <Link
           to={editing ? `/musicas/${id}` : "/"}
-          className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 items-center justify-center rounded-full text-ink-soft hover:bg-paper hover:text-ink"
+          className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label="Voltar"
         >
           <span aria-hidden className="text-xl leading-none">
             ‹
           </span>
         </Link>
-        <h1 className="min-w-0 flex-1 truncate px-1 text-base font-semibold">
+        <h1 className="min-w-0 flex-1 truncate px-1 text-base font-semibold text-white">
           {editing ? "Editar música" : "Nova música"}
         </h1>
-        <ThemeButton />
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-        {status === "loading" ? (
-          <div className="space-y-3 p-4" aria-hidden>
-            <div className="h-11 animate-pulse rounded-xl bg-paper" />
-            <div className="h-11 animate-pulse rounded-xl bg-paper" />
-            <div className="h-48 animate-pulse rounded-xl bg-paper" />
-          </div>
-        ) : status === "missing" ? (
-          <div className="px-6 py-16 text-center">
-            <p className="text-base font-medium">Música não encontrada</p>
-            <Link to="/" className="mt-3 inline-block text-sm font-medium text-pine hover:underline">
-              Voltar à lista
-            </Link>
-          </div>
-        ) : (
-          <form className="space-y-4 px-4 py-4" onSubmit={submit}>
+      {status === "loading" ? (
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4" aria-hidden>
+          <div className="h-11 animate-pulse rounded-xl bg-paper" />
+          <div className="h-11 animate-pulse rounded-xl bg-paper" />
+          <div className="h-48 animate-pulse rounded-xl bg-paper" />
+        </div>
+      ) : status === "missing" ? (
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-16 text-center">
+          <p className="text-base font-medium">Música não encontrada</p>
+          <Link to="/" className="mt-3 inline-block text-sm font-medium text-pine hover:underline">
+            Voltar à lista
+          </Link>
+        </div>
+      ) : (
+        <form className="flex min-h-0 flex-1 flex-col" onSubmit={submit}>
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4">
+            <div
+              className="grid grid-cols-4 rounded-xl border border-line bg-paper p-0.5"
+              role="tablist"
+              aria-label="Conteúdo da música"
+            >
+              <TabButton active={contentTab === "letra"} onClick={() => setContentTab("letra")}>
+                Letra
+              </TabButton>
+              <TabButton active={contentTab === "arranjo"} onClick={() => setContentTab("arranjo")}>
+                Vozes
+              </TabButton>
+              <TabButton active={contentTab === "cifra"} onClick={() => setContentTab("cifra")}>
+                Cifra
+              </TabButton>
+              <TabButton active={contentTab === "info"} onClick={() => setContentTab("info")}>
+                Info
+              </TabButton>
+            </div>
+
             <div className="space-y-1.5">
               <label className="block space-y-1.5">
                 <span className="text-xs font-medium text-ink-soft">Título</span>
@@ -197,22 +270,6 @@ export default function SongFormPage() {
               <p id="titulo-numero" className="text-xs leading-relaxed text-ink-soft">
                 O número segue a ordem alfabética do título e muda quando a coletânea muda.
               </p>
-            </div>
-
-            <div
-              className="grid grid-cols-3 rounded-xl border border-line bg-paper p-0.5"
-              role="tablist"
-              aria-label="Conteúdo da música"
-            >
-              <TabButton active={contentTab === "letra"} onClick={() => setContentTab("letra")}>
-                Letra
-              </TabButton>
-              <TabButton active={contentTab === "arranjo"} onClick={() => setContentTab("arranjo")}>
-                Arranjo Vocal
-              </TabButton>
-              <TabButton active={contentTab === "cifra"} onClick={() => setContentTab("cifra")}>
-                Cifra
-              </TabButton>
             </div>
 
             {contentTab === "letra" ? (
@@ -307,7 +364,7 @@ export default function SongFormPage() {
                   }))
                 }
               />
-            ) : (
+            ) : contentTab === "cifra" ? (
               <>
                 <div className="space-y-1.5">
                   <p className="text-xs font-medium text-ink-soft">Cifra da letra</p>
@@ -323,7 +380,7 @@ export default function SongFormPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <p className="text-center text-[0.78em] tracking-[0.16em] text-ink-soft">Refrão</p>
+                  <p className="text-[0.78em] tracking-[0.16em] text-ink-soft">Refrão</p>
                   <ChordEditor
                     label="Cifra do refrão"
                     text={form.refrao}
@@ -334,27 +391,129 @@ export default function SongFormPage() {
                   />
                 </div>
               </>
-            )}
+            ) : (
+              <div className="space-y-4">
+                <label className="block space-y-1.5">
+                  <span className="text-xs font-medium text-ink-soft">Compositor</span>
+                  <input
+                    className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
+                    placeholder="Nome do compositor"
+                    value={form.compositor}
+                    onChange={setField("compositor")}
+                    maxLength={200}
+                  />
+                </label>
 
-            {error ? <p className="text-sm text-danger">{error}</p> : null}
-            <div className="flex justify-end gap-2 pb-4">
+                <label className="block space-y-1.5">
+                  <span className="text-xs font-medium text-ink-soft">Álbum</span>
+                  <input
+                    className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
+                    placeholder="Nome do álbum"
+                    value={form.album}
+                    onChange={setField("album")}
+                    maxLength={200}
+                  />
+                </label>
+
+                <label className="block space-y-1.5">
+                  <span className="text-xs font-medium text-ink-soft">Ano de Lançamento</span>
+                  <input
+                    className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
+                    placeholder="Ex.: 2020"
+                    inputMode="numeric"
+                    value={form.anoLancamento}
+                    onChange={setField("anoLancamento")}
+                    maxLength={20}
+                  />
+                </label>
+
+                <label className="block space-y-1.5">
+                  <span className="text-xs font-medium text-ink-soft">Adicionais</span>
+                  <textarea
+                    rows={4}
+                    className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-sm leading-relaxed outline-none ring-pine focus:ring-2"
+                    placeholder="Informações adicionais sobre a música"
+                    value={form.adicionais}
+                    onChange={setField("adicionais")}
+                    maxLength={2000}
+                  />
+                </label>
+
+                <div className="space-y-1.5">
+                  <span className="block text-xs font-medium text-ink-soft">
+                    Demonstração (MP3 / Áudio)
+                  </span>
+                  {form.audioDataUrl || (form.audioArquivo && !form.removeAudio) ? (
+                    <div className="space-y-2.5 rounded-xl border border-line bg-paper p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate text-xs font-medium text-ink">
+                          {form.audioNome || form.audioArquivo}
+                        </span>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          <label className="inline-flex h-7 cursor-pointer items-center rounded-full border border-line bg-card px-2.5 text-xs font-medium text-ink hover:bg-paper">
+                            Trocar
+                            <input
+                              type="file"
+                              accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.flac"
+                              className="sr-only"
+                              onChange={handleAudioChange}
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={clearAudio}
+                            className="inline-flex h-7 items-center rounded-full border border-line bg-card px-2.5 text-xs font-medium text-danger hover:bg-danger-soft"
+                          >
+                            Remover
+                          </button>
+                        </div>
+                      </div>
+                      <audio
+                        controls
+                        preload="metadata"
+                        src={
+                          form.audioDataUrl ||
+                          `/api/audios/${encodeURIComponent(form.audioArquivo)}`
+                        }
+                        className="h-9 w-full"
+                      />
+                    </div>
+                  ) : (
+                    <label className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-line bg-paper px-3 py-3 text-sm text-ink-soft hover:border-pine/50 hover:text-ink">
+                      <span>Selecionar arquivo de áudio (MP3, WAV, M4A…)</span>
+                      <input
+                        type="file"
+                        accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.flac"
+                        className="sr-only"
+                        onChange={handleAudioChange}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="shrink-0 border-t border-line bg-card px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] landscape-mobile:py-2">
+            {error ? <p className="mb-2 text-sm text-danger">{error}</p> : null}
+            <div className="flex justify-end gap-2">
               <Link
                 to={editing ? `/musicas/${id}` : "/"}
-                className="inline-flex h-10 items-center rounded-lg border border-line px-3 text-sm"
+                className="inline-flex h-10 items-center rounded-lg border border-line px-3 text-sm hover:bg-paper"
               >
                 Cancelar
               </Link>
               <button
                 type="submit"
-                className="h-10 rounded-lg bg-pine px-4 text-sm font-medium text-white disabled:opacity-60"
+                className="h-10 rounded-lg bg-pine px-4 text-sm font-medium text-white hover:bg-pine-dark disabled:opacity-60"
                 disabled={saving}
               >
                 {saving ? "Salvando…" : "Salvar"}
               </button>
             </div>
-          </form>
-        )}
-      </div>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
@@ -365,7 +524,7 @@ function TabButton({ active, onClick, children }) {
       type="button"
       role="tab"
       aria-selected={active}
-      className={`h-9 rounded-[0.65rem] text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+      className={`h-9 truncate rounded-[0.65rem] px-1.5 text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine sm:text-sm ${
         active ? "bg-card text-ink shadow-sm" : "text-ink-soft hover:text-ink"
       }`}
       onClick={onClick}

@@ -1,4 +1,5 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { createReadStream } from "node:fs";
+import { mkdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { packChordLines, syncChordLines } from "../src/lib/chords.js";
@@ -13,10 +14,120 @@ import { packLyrics } from "../src/lib/voices.js";
  * No ICER, MusicaLetra guarda só a letra; o refrão entra nesse campo na integração.
  * Este arquivo não conversa com o ICER.
  */
-const filePath = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../data/songs.json",
-);
+const serverDir = path.dirname(fileURLToPath(import.meta.url));
+const filePath = path.resolve(serverDir, "../data/songs.json");
+const audiosDir = path.resolve(serverDir, "../data/audios");
+
+const AUDIO_EXTENSIONS = {
+  "audio/mpeg": ".mp3",
+  "audio/mp3": ".mp3",
+  "audio/wav": ".wav",
+  "audio/x-wav": ".wav",
+  "audio/wave": ".wav",
+  "audio/ogg": ".ogg",
+  "audio/mp4": ".m4a",
+  "audio/x-m4a": ".m4a",
+  "audio/aac": ".aac",
+  "audio/webm": ".webm",
+  "audio/flac": ".flac",
+};
+
+const CONTENT_TYPES = {
+  ".mp3": "audio/mpeg",
+  ".wav": "audio/wav",
+  ".ogg": "audio/ogg",
+  ".m4a": "audio/mp4",
+  ".aac": "audio/aac",
+  ".webm": "audio/webm",
+  ".flac": "audio/flac",
+};
+
+async function removeAudioFile(filename) {
+  const safe = path.basename(String(filename ?? "").trim());
+  if (!safe) return;
+  try {
+    await unlink(path.join(audiosDir, safe));
+  } catch {
+    /* ignore missing file */
+  }
+}
+
+async function saveAudioFromDataUrl(songId, dataUrl, originalName) {
+  const match = String(dataUrl ?? "").match(/^data:([^;,]+);base64,([A-Za-z0-9+/=\s]+)$/);
+  if (!match) return { error: "audio_invalido" };
+  const mime = match[1].toLowerCase().trim();
+  const base64 = match[2];
+  const rawName = path.basename(String(originalName ?? "").trim()).slice(0, 180);
+  const nameExt = path.extname(rawName).toLowerCase();
+  const ext =
+    (CONTENT_TYPES[nameExt] ? nameExt : "") ||
+    AUDIO_EXTENSIONS[mime] ||
+    (mime.startsWith("audio/") ? ".mp3" : "");
+  if (!ext) return { error: "audio_invalido" };
+
+  const buffer = Buffer.from(base64, "base64");
+  if (!buffer.length) return { error: "audio_invalido" };
+
+  await mkdir(audiosDir, { recursive: true });
+  const audioArquivo = `song-${songId}-${Date.now()}${ext}`;
+  await writeFile(path.join(audiosDir, audioArquivo), buffer);
+  return {
+    audioArquivo,
+    audioNome: rawName || `demonstracao${ext}`,
+  };
+}
+
+export async function streamAudioFile(filename, req, res) {
+  const safe = path.basename(String(filename ?? "").trim());
+  if (!safe || safe !== filename) {
+    res.statusCode = 404;
+    res.end();
+    return;
+  }
+  const target = path.join(audiosDir, safe);
+  let info;
+  try {
+    info = await stat(target);
+  } catch {
+    res.statusCode = 404;
+    res.end();
+    return;
+  }
+  if (!info.isFile()) {
+    res.statusCode = 404;
+    res.end();
+    return;
+  }
+
+  const ext = path.extname(safe).toLowerCase();
+  const contentType = CONTENT_TYPES[ext] || "application/octet-stream";
+  const total = info.size;
+  const range = req.headers?.range;
+
+  res.setHeader("Content-Type", contentType);
+  res.setHeader("Accept-Ranges", "bytes");
+
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = Number.parseInt(parts[0], 10);
+    const end = parts[1] ? Number.parseInt(parts[1], 10) : total - 1;
+    if (Number.isNaN(start) || Number.isNaN(end) || start > end || end >= total) {
+      res.statusCode = 416;
+      res.setHeader("Content-Range", `bytes */${total}`);
+      res.end();
+      return;
+    }
+    res.statusCode = 206;
+    res.setHeader("Content-Range", `bytes ${start}-${end}/${total}`);
+    res.setHeader("Content-Length", String(end - start + 1));
+    createReadStream(target, { start, end }).pipe(res);
+    return;
+  }
+
+  res.statusCode = 200;
+  res.setHeader("Content-Length", String(total));
+  createReadStream(target).pipe(res);
+}
 
 let queue = Promise.resolve();
 
@@ -45,9 +156,6 @@ const droppedKeys = [
   "autorId",
   "temaId",
   "banda",
-  "album",
-  "ano",
-  "outros",
   "vozesSeparadas",
   "vozesTodas",
 ];
@@ -67,6 +175,10 @@ function presentSongs(songs) {
 
 export function validateSong(input) {
   const titulo = String(input?.titulo ?? "").trim();
+  const compositor = String(input?.compositor ?? "").trim().slice(0, 200);
+  const album = String(input?.album ?? "").trim().slice(0, 200);
+  const anoLancamento = String(input?.anoLancamento ?? "").trim().slice(0, 20);
+  const adicionais = String(input?.adicionais ?? "").trim().slice(0, 2000);
   const vozesPack = packLyrics(input?.letraVozes ?? "", input?.vozesArranjo);
   const hasArranjoVoices = Boolean(vozesPack.text);
   const letraRaw = String(input?.letra ?? "").trim() ? input?.letra : vozesPack.text;
@@ -92,6 +204,10 @@ export function validateSong(input) {
   return {
     value: {
       titulo,
+      compositor,
+      album,
+      anoLancamento,
+      adicionais,
       letra,
       refrao,
       cronologica,
@@ -124,7 +240,15 @@ export function createSong(input) {
     const checked = validateSong(input);
     if (checked.error) return checked;
     const id = songs.reduce((max, song) => Math.max(max, Number(song.id) || 0), 0) + 1;
-    songs.push({ id, ...checked.value });
+    let audioArquivo = "";
+    let audioNome = "";
+    if (input?.audioDataUrl) {
+      const savedAudio = await saveAudioFromDataUrl(id, input.audioDataUrl, input.audioNome);
+      if (savedAudio.error) return savedAudio;
+      audioArquivo = savedAudio.audioArquivo;
+      audioNome = savedAudio.audioNome;
+    }
+    songs.push({ id, ...checked.value, audioArquivo, audioNome });
     await writeSongs(songs);
     return { song: (await presentSongs(songs)).find((item) => item.id === id) };
   });
@@ -137,7 +261,25 @@ export function updateSong(id, input) {
     if (index === -1) return { error: "nao_encontrada" };
     const checked = validateSong(input);
     if (checked.error) return checked;
-    songs[index] = { id, ...checked.value };
+    const current = songs[index];
+    let audioArquivo = String(current.audioArquivo ?? "").trim();
+    let audioNome = String(current.audioNome ?? "").trim();
+
+    if (input?.audioDataUrl) {
+      const savedAudio = await saveAudioFromDataUrl(id, input.audioDataUrl, input.audioNome);
+      if (savedAudio.error) return savedAudio;
+      if (audioArquivo && audioArquivo !== savedAudio.audioArquivo) {
+        await removeAudioFile(audioArquivo);
+      }
+      audioArquivo = savedAudio.audioArquivo;
+      audioNome = savedAudio.audioNome;
+    } else if (input?.removeAudio) {
+      if (audioArquivo) await removeAudioFile(audioArquivo);
+      audioArquivo = "";
+      audioNome = "";
+    }
+
+    songs[index] = { id, ...checked.value, audioArquivo, audioNome };
     await writeSongs(songs);
     return { song: (await presentSongs(songs)).find((item) => item.id === id) };
   });
@@ -146,8 +288,12 @@ export function updateSong(id, input) {
 export function deleteSong(id) {
   return withLock(async () => {
     const songs = await readSongs();
+    const target = songs.find((song) => song.id === id);
+    if (!target) return { error: "nao_encontrada" };
     const next = songs.filter((song) => song.id !== id);
-    if (next.length === songs.length) return { error: "nao_encontrada" };
+    if (target.audioArquivo) {
+      await removeAudioFile(target.audioArquivo);
+    }
     await writeSongs(next);
     return { ok: true };
   });

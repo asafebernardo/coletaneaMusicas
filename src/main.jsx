@@ -17,3 +17,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>,
 );
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    const swUrl = `${rawBase.replace(/\/$/, "")}/sw.js`;
+    navigator.serviceWorker.register(swUrl).catch(() => {
+      /* ignore service worker registration errors */
+    });
+  });
+}

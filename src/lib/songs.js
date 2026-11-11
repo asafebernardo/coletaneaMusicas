@@ -140,3 +140,23 @@ export function writeShowChronological(show) {
     /* ignore */
   }
 }
+
+const CHORDS_BTN_KEY = "coletanea-exibir-botao-cifra";
+
+export function readShowChordsButton() {
+  try {
+    const raw = localStorage.getItem(CHORDS_BTN_KEY);
+    if (raw == null || raw === "") return false;
+    return raw === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function writeShowChordsButton(show) {
+  try {
+    localStorage.setItem(CHORDS_BTN_KEY, show ? "1" : "0");
+  } catch {
+    /* ignore */
+  }
+}

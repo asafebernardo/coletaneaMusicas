@@ -7,6 +7,7 @@ import {
   deleteSong,
   getSong,
   listSongs,
+  streamAudioFile,
   updateSong,
 } from "./server/songs-store.js";
 
@@ -74,6 +75,11 @@ function localSongsApiPlugin() {
           if (req.method === "POST" && url.pathname === "/api/songs") {
             const body = await readJsonBody(req);
             sendStoreResult(res, await createSong(body), 201);
+            return;
+          }
+          const audioMatch = url.pathname.match(/^\/api\/audios\/([^/]+)$/);
+          if (audioMatch && (req.method === "GET" || req.method === "HEAD")) {
+            await streamAudioFile(decodeURIComponent(audioMatch[1]), req, res);
             return;
           }
           const match = url.pathname.match(/^\/api\/songs\/(\d+)$/);

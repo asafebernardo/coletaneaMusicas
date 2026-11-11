@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { listSongs, messageForSongError } from "@/api/songs.js";
 import MarqueeText from "@/components/MarqueeText.jsx";
-import ThemeButton from "@/components/ThemeButton.jsx";
 import { filterSongs, lyricExcerpt } from "@/lib/songs.js";
 
 export default function CatalogPage() {
@@ -33,23 +32,22 @@ export default function CatalogPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 border-b border-line bg-card/95 px-4 py-3 backdrop-blur landscape-mobile:flex landscape-mobile:items-center landscape-mobile:gap-3 landscape-mobile:py-2">
+      <header className="sticky top-0 z-10 border-b border-pine-dark bg-pine px-4 py-3 text-white shadow-sm landscape-mobile:flex landscape-mobile:items-center landscape-mobile:gap-3 landscape-mobile:py-2">
         <div className="relative z-20 flex items-center gap-2 landscape-mobile:shrink-0">
           <div className="min-w-0 flex-1">
-            <h1 className="text-lg font-semibold leading-tight landscape-mobile:text-base">
+            <h1 className="truncate text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
               Coletâneas de Louvor
             </h1>
           </div>
-          <ThemeButton />
           <Link
             to="/musicas/nova"
-            className="inline-flex h-9 items-center rounded-full bg-pine px-3 text-sm font-medium text-white hover:bg-pine-dark landscape-mobile:h-8"
+            className="inline-flex h-9 items-center rounded-full bg-white px-3.5 text-sm font-semibold text-pine shadow-sm transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8"
           >
             Nova
           </Link>
         </div>
         <input
-          className="mt-3 h-11 w-full rounded-xl border border-line bg-paper px-3 text-sm outline-none ring-pine focus:ring-2 landscape-mobile:mt-0 landscape-mobile:h-9 landscape-mobile:flex-1"
+          className="mt-3 h-11 w-full rounded-xl border border-white/20 bg-card px-3 text-sm text-ink placeholder:text-ink-soft outline-none ring-white/80 focus:ring-2 landscape-mobile:mt-0 landscape-mobile:h-9 landscape-mobile:flex-1"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Número, título ou letra"

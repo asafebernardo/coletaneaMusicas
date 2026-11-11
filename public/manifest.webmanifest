@@ -1,0 +1,31 @@
+{
+  "name": "Coletâneas de Louvor",
+  "short_name": "Coletânea",
+  "description": "Coletânea de músicas cristãs para uso no site, no formato de um app de celular.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3efe6",
+  "theme_color": "#1e4d3a",
+  "icons": [
+    {
+      "src": "/C.L.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -55,6 +55,8 @@ export function messageForSongError(error) {
       return "Informe o título (até 200 caracteres).";
     case "letra_invalida":
       return "Informe a letra da música.";
+    case "audio_invalido":
+      return "Arquivo de áudio inválido.";
     case "nao_encontrada":
       return "Não encontrado.";
     default:
