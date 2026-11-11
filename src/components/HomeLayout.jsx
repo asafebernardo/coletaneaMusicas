@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { getAccentHex, useAccent, useTheme } from "@/lib/theme.js";
 
 const barItem =
   "flex h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine landscape-mobile:h-10 landscape-mobile:flex-row landscape-mobile:gap-1.5";
@@ -6,6 +7,10 @@ const barOn = "text-pine";
 const barOff = "text-ink-soft hover:text-ink";
 
 export default function HomeLayout() {
+  const theme = useTheme();
+  const accent = useAccent();
+  const activeColor = getAccentHex(theme, accent);
+
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto">
@@ -14,12 +19,14 @@ export default function HomeLayout() {
 
       <nav
         aria-label="Navegação principal"
+        data-accent={accent}
         className="grid shrink-0 grid-cols-3 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
       >
         <NavLink
           to="/"
           end
           className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
+          style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
           aria-label="Louvor"
         >
           <PraiseIcon />
@@ -28,6 +35,7 @@ export default function HomeLayout() {
         <NavLink
           to="/categorias"
           className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
+          style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
           aria-label="Categorias"
         >
           <CategoriesIcon />
@@ -36,6 +44,7 @@ export default function HomeLayout() {
         <NavLink
           to="/configuracoes"
           className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
+          style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
           aria-label="Configurações"
         >
           <SettingsIcon />

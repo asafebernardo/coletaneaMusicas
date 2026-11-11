@@ -4,15 +4,79 @@ export const THEME_KEY = "coletanea-theme";
 export const ACCENT_KEY = "coletanea-accent";
 
 export const ACCENT_OPTIONS = [
-  { id: "verde", label: "Verde", swatch: "#1e4d3a" },
-  { id: "amarelo", label: "Amarelo", swatch: "#a16a12" },
-  { id: "azul", label: "Azul", swatch: "#1e4476" },
-  { id: "laranja", label: "Laranja", swatch: "#b04a1c" },
-  { id: "roxo", label: "Roxo", swatch: "#5e357e" },
-  { id: "rosa", label: "Rosa", swatch: "#9c2f5d" },
-  { id: "cinza", label: "Cinza", swatch: "#44505e" },
+  {
+    id: "verde",
+    label: "Verde",
+    swatch: "#1e4d3a",
+    darkSwatch: "#2e7a5a",
+    pine: "30 77 58",
+    pineDark: "22 57 43",
+    darkPine: "46 122 90",
+    darkPineDark: "32 92 68",
+  },
+  {
+    id: "amarelo",
+    label: "Amarelo",
+    swatch: "#a16a12",
+    darkSwatch: "#ca8a04",
+    pine: "161 106 18",
+    pineDark: "128 83 12",
+    darkPine: "202 138 4",
+    darkPineDark: "161 106 18",
+  },
+  {
+    id: "azul",
+    label: "Azul",
+    swatch: "#1e4476",
+    darkSwatch: "#3b76c4",
+    pine: "30 68 118",
+    pineDark: "21 50 89",
+    darkPine: "59 118 196",
+    darkPineDark: "42 91 158",
+  },
+  {
+    id: "laranja",
+    label: "Laranja",
+    swatch: "#b04a1c",
+    darkSwatch: "#d6622c",
+    pine: "176 74 28",
+    pineDark: "138 56 19",
+    darkPine: "214 98 44",
+    darkPineDark: "176 74 28",
+  },
+  {
+    id: "roxo",
+    label: "Roxo",
+    swatch: "#5e357e",
+    darkSwatch: "#8b5cb8",
+    pine: "94 53 126",
+    pineDark: "71 38 97",
+    darkPine: "139 92 184",
+    darkPineDark: "110 68 150",
+  },
+  {
+    id: "rosa",
+    label: "Rosa",
+    swatch: "#9c2f5d",
+    darkSwatch: "#c64b80",
+    pine: "156 47 93",
+    pineDark: "120 34 71",
+    darkPine: "198 75 128",
+    darkPineDark: "163 54 101",
+  },
+  {
+    id: "cinza",
+    label: "Cinza",
+    swatch: "#44505e",
+    darkSwatch: "#70849c",
+    pine: "68 80 94",
+    pineDark: "50 60 72",
+    darkPine: "112 132 156",
+    darkPineDark: "88 106 128",
+  },
 ];
 
+const ACCENT_MAP = new Map(ACCENT_OPTIONS.map((item) => [item.id, item]));
 const VALID_ACCENTS = new Set(ACCENT_OPTIONS.map((item) => item.id));
 
 const THEME_COLOR = {
@@ -45,6 +109,24 @@ function readStoredAccent() {
   return VALID_ACCENTS.has(datasetAccent) ? datasetAccent : "verde";
 }
 
+function applyCssVariables(themeValue, accentValue) {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  root.dataset.theme = themeValue;
+  root.dataset.accent = accentValue;
+  const option = ACCENT_MAP.get(accentValue) || ACCENT_OPTIONS[0];
+  const isDark = themeValue === "dark";
+  root.style.setProperty("--pine", isDark ? option.darkPine : option.pine);
+  root.style.setProperty("--pine-dark", isDark ? option.darkPineDark : option.pineDark);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", THEME_COLOR[themeValue] || THEME_COLOR.light);
+}
+
+export function getAccentHex(themeValue = current, accentValue = currentAccent) {
+  const option = ACCENT_MAP.get(accentValue) || ACCENT_OPTIONS[0];
+  return themeValue === "dark" ? option.darkSwatch : option.swatch;
+}
+
 export function getTheme() {
   return current;
 }
@@ -61,26 +143,24 @@ export function subscribeTheme(listener) {
 export function setTheme(next) {
   if (next !== "light" && next !== "dark") return;
   current = next;
-  document.documentElement.dataset.theme = next;
   try {
     localStorage.setItem(THEME_KEY, next);
   } catch {
     /* ignore */
   }
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", THEME_COLOR[next]);
+  applyCssVariables(current, currentAccent);
   listeners.forEach((listener) => listener());
 }
 
 export function setAccent(next) {
   if (!VALID_ACCENTS.has(next)) return;
   currentAccent = next;
-  document.documentElement.dataset.accent = next;
   try {
     localStorage.setItem(ACCENT_KEY, next);
   } catch {
     /* ignore */
   }
+  applyCssVariables(current, currentAccent);
   listeners.forEach((listener) => listener());
 }
 
@@ -90,8 +170,9 @@ export function toggleTheme() {
 
 export function initTheme() {
   if (typeof document === "undefined") return;
-  setTheme(readStored());
-  setAccent(readStoredAccent());
+  current = readStored();
+  currentAccent = readStoredAccent();
+  applyCssVariables(current, currentAccent);
 }
 
 export function useTheme() {

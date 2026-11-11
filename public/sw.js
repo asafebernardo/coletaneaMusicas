@@ -1,4 +1,4 @@
-const CACHE_NAME = "coletanea-louvor-v2";
+const CACHE_NAME = "coletanea-louvor-v3";
 const PRECACHE_URLS = [
   "./",
   "./index.html",

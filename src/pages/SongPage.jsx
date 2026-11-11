@@ -21,7 +21,7 @@ import {
   writeShowChordsButton,
   writeShowChronological,
 } from "@/lib/songs.js";
-import { setTheme, useTheme } from "@/lib/theme.js";
+import { getAccentHex, setTheme, useAccent, useTheme } from "@/lib/theme.js";
 import { songHasVoices } from "@/lib/voices.js";
 
 const barItem =
@@ -57,6 +57,8 @@ export default function SongPage() {
   const timelineRef = useRef(null);
   const seekingRef = useRef(false);
   const theme = useTheme();
+  const accent = useAccent();
+  const activeColor = getAccentHex(theme, accent);
   const hasAudio = Boolean(song?.audioArquivo);
   const audioUrl = hasAudio ? getAudioUrl(song.audioArquivo) : "";
   const progressPercent =
@@ -616,6 +618,7 @@ export default function SongPage() {
       {song ? (
         <nav
           aria-label="Controles da música"
+          data-accent={accent}
           className={`grid shrink-0 ${
             showChordsButton ? "grid-cols-4" : "grid-cols-3"
           } border-t border-line bg-card pb-[env(safe-area-inset-bottom)]`}
@@ -634,6 +637,7 @@ export default function SongPage() {
             <button
               type="button"
               className={`${barItem} ${!showChords && !activeVoices ? barOn : barOff}`}
+              style={!showChords && !activeVoices ? { color: activeColor } : undefined}
               aria-pressed={!showChords && !activeVoices}
               aria-label="Ver letra"
               onClick={() => {
@@ -652,6 +656,7 @@ export default function SongPage() {
               <button
                 type="button"
                 className={`${barItem} ${showChords ? barOn : barOff}`}
+                style={showChords ? { color: activeColor } : undefined}
                 aria-pressed={showChords}
                 aria-label="Ver cifra"
                 onClick={() => {
@@ -678,6 +683,7 @@ export default function SongPage() {
             <button
               type="button"
               className={`${barItem} ${activeVoices ? barOn : barOff}`}
+              style={activeVoices ? { color: activeColor } : undefined}
               aria-pressed={activeVoices}
               aria-label="Ver divisão de vozes"
               onClick={() => {
@@ -704,6 +710,7 @@ export default function SongPage() {
           <button
             type="button"
             className={`${barItem} ${showSettings ? barOn : barOff}`}
+            style={showSettings ? { color: activeColor } : undefined}
             aria-pressed={showSettings}
             aria-expanded={showSettings}
             aria-label="Configuração"
