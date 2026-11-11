@@ -1,5 +1,5 @@
 {
-  "name": "Coletâneas de Louvor",
+  "name": "Coletânea de Louvor",
   "short_name": "Coletânea",
   "description": "Coletânea de músicas cristãs para uso no site, no formato de um app de celular.",
   "lang": "pt-BR",
@@ -10,9 +10,9 @@
   "theme_color": "#f3efe6",
   "icons": [
     {
-      "src": "./C.L.png",
-      "sizes": "500x500",
-      "type": "image/png",
+      "src": "./logo.jfif",
+      "sizes": "2048x2048",
+      "type": "image/jpeg",
       "purpose": "any"
     },
     {

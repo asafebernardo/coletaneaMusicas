@@ -52,17 +52,9 @@ export default function CatalogPage() {
       <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-pine-dark bg-pine px-4 text-white shadow-sm landscape-mobile:h-11">
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
-            Coletâneas de Louvor
+            Coletânea de Louvor
           </h1>
         </div>
-        {canManage ? (
-          <Link
-            to="/musicas/nova"
-            className="inline-flex h-9 items-center rounded-full bg-white px-3.5 text-sm font-semibold text-pine shadow-sm transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8"
-          >
-            Nova
-          </Link>
-        ) : null}
         <button
           type="button"
           onClick={toggleSearch}
@@ -76,13 +68,6 @@ export default function CatalogPage() {
         >
           <SearchIcon />
         </button>
-        <Link
-          to="/sobre"
-          aria-label="Descrição do aplicativo"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white/90 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8 landscape-mobile:w-8"
-        >
-          <InfoIcon />
-        </Link>
       </header>
 
       {showSearch ? (
@@ -179,25 +164,6 @@ function SearchIcon() {
     >
       <circle cx="11" cy="11" r="7" />
       <path d="m20 20-3.8-3.8" />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      className="h-5 w-5 shrink-0"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 11v5" />
-      <circle cx="12" cy="8" r="0.8" fill="currentColor" stroke="none" />
     </svg>
   );
 }

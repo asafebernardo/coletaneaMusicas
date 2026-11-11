@@ -10,7 +10,6 @@ import CategoriesPage from "@/pages/CategoriesPage.jsx";
 import LandingPage from "@/pages/LandingPage.jsx";
 import SettingsPage from "@/pages/SettingsPage.jsx";
 import SongFormPage from "@/pages/SongFormPage.jsx";
-import SongInfoPage from "@/pages/SongInfoPage.jsx";
 import SongPage from "@/pages/SongPage.jsx";
 
 const WEB_MODE_KEY = "coletanea-web-mode";
@@ -62,8 +61,9 @@ export default function App() {
         />
         <Route element={<HomeLayout />}>
           <Route path="/" element={<CatalogPage />} />
-          <Route path="/sobre" element={<AppInfoPage />} />
+          <Route path="/mais" element={<CategoriesPage />} />
           <Route path="/categorias" element={<CategoriesPage />} />
+          <Route path="/sobre" element={<AppInfoPage />} />
           <Route path="/configuracoes" element={<SettingsPage />} />
           <Route path="*" element={<CatalogPage />} />
         </Route>
@@ -75,7 +75,6 @@ export default function App() {
           path="/musicas/:id/editar"
           element={canManage ? <SongFormPage /> : <Navigate to="/" replace />}
         />
-        <Route path="/musicas/:id/info" element={<SongInfoPage />} />
         <Route path="/musicas/:id" element={<SongPage />} />
       </Routes>
     </AppFrame>

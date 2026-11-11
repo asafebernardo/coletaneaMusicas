@@ -10,7 +10,7 @@ export default function LandingPage({ onEnterWeb }) {
   const canPrompt = useCanPromptInstall();
   const isInstalled = useIsPwaInstalled();
   const [showInstallHelp, setShowInstallHelp] = useState(false);
-  const logoSrc = `${import.meta.env.BASE_URL || "/"}C.L.png`;
+  const logoSrc = `${import.meta.env.BASE_URL || "/"}logo.jfif`;
   const isIos = isIosDevice();
 
   const handleInstallClick = async () => {
@@ -29,12 +29,12 @@ export default function LandingPage({ onEnterWeb }) {
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-8 text-center">
         <img
           src={logoSrc}
-          alt="Logo Coletâneas de Louvor"
+          alt="Logo Coletânea de Louvor"
           className="h-20 w-20 shrink-0 rounded-full border border-line bg-white object-cover shadow-sm landscape-mobile:h-14 landscape-mobile:w-14"
         />
 
         <h2 className="mt-4 text-xl font-semibold text-ink landscape-mobile:mt-2 landscape-mobile:text-lg">
-          Coletâneas de Louvor
+          Coletânea de Louvor
         </h2>
         <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-ink-soft">
           Escolha como deseja utilizar a coletânea de músicas no seu dispositivo.

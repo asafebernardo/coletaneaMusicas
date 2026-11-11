@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   isIosDevice,
   triggerPwaInstall,
@@ -45,8 +46,17 @@ export default function SettingsPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center border-b border-pine-dark bg-pine px-4 text-white shadow-sm landscape-mobile:h-11">
-        <h1 className="truncate text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
+      <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-pine-dark bg-pine px-4 text-white shadow-sm landscape-mobile:h-11">
+        <Link
+          to="/mais"
+          aria-label="Voltar para Mais+"
+          className="inline-flex h-10 w-10 -ml-2 shrink-0 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8 landscape-mobile:w-8"
+        >
+          <span aria-hidden className="text-xl leading-none">
+            ‹
+          </span>
+        </Link>
+        <h1 className="min-w-0 flex-1 truncate text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
           Configurações
         </h1>
       </header>

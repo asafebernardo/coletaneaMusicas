@@ -219,11 +219,46 @@
   {
     "id": 20,
     "titulo": "A Alegria está no coração",
+    "compositor": "Haryson Guanaes Lima e Vavá Rodrigues",
     "letra": "A alegria está no coração de quem já conhece a Jesus\nA verdadeira paz só tem aquele que já conhece a Jesus\nO sentimento mais precioso que vem do nosso Senhor\nÉ o amor, que só tem quem já conhece a Jesus.\n(Aleluia, amém)\n\nPosso pisar numa tropa e saltar as muralhas\nAleluia, aleluia!\nPosso pisar numa tropa e saltar as muralhas\nAleluia, aleluia!\n\nCristo é a rocha da minha salvação\nCom ele não há mais condenação\nPosso pisar numa tropa e saltar as muralhas\nAleluia, aleluia!\n\nAleluia, aleluia, aleluia, aleluia.\n\nO sentimento mais precioso\nQue vem do nosso Senhor\nÉ o amor que só tem\nQuem já conhece a Jesus\n(Aleluia, amém)",
     "refrao": "",
     "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 21,
@@ -587,23 +622,73 @@
   },
   {
     "id": 37,
-    "titulo": "A vitória é daquele que contemplar",
+    "titulo": "A Vitória",
+    "compositor": "Adhemar de Campos",
     "letra": "A vitória é daquele que contemplar\nAo Cordeiro, Cristo, Leão da tribo de Judá,\nQue foi morto e com seu sangue pôde então, comprar\nHomens que com ele sobre a terra irão reinar.\n\nA vitória é daquele que o adorar;\nAo seu lado no seu trono se assentará,\nSe a Jesus seguir e for por onde ele andar,\nNo seu monte santo um novo canto entoará.\n\nA vitória do Senhor é certa: aleluia!\nCom o sobro de sua boca, sim, destruirá\nO inimigo, o anti-cristo, que não resistirá!\nJesus Cristo, o Rei, dominará! (bis)",
     "refrao": "",
     "cronologica": false,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 38,
-    "titulo": "A paz do céu encheu meu coração",
+    "titulo": "A Paz do Céu",
+    "compositor": "John W. Peterson",
     "letra": "Maravilhoso e sublime pra mim, sim, nunca me esquecerei:\nDia glorioso em que a Cristo eu vi, meu coração entreguei.\nOh! que precioso amigo ele é, salvou-me da perdição,\nTirou-me as culpas, das trevas livrando e\nTrazendo-me pleno perdão.\n\nGrande esperança Jesus já me deu, que não desvanecerá!\nHá uma gloriosa morada no céu, que breve minha será\nTudo porque neste dia feliz, o meu Senhor aceitei,\nGrandes riquezas e bênçãos celestes\nDas mãos divinais alcancei.",
     "refrao": "A paz do céu encheu meu coração\nQuando Jesus me deu a salvação;\nMinh’alma então lavou, a luz em mim raiou!\nA paz do céu encheu meu coração.",
     "cronologica": true,
     "refraoPrimeiro": true,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 39,
@@ -618,16 +703,62 @@
   {
     "id": 42,
     "titulo": "A minh’alma está cheia de paz",
+    "compositor": "Desconhecido",
     "letra": "A minh'alma está cheia de paz (bis)\nTenho gozo celeste e prazer em dizer:\nA minh'alma está cheia de paz. (2X)\n\nEu caminhando vou, (bis)\nTenho gozo celeste e prazer em dizer:\nPara a cidade santa eu caminhando vou. (2X)\n\nEu vou cantar no céu, (bis)\nTenho gozo celeste e prazer em dizer:\nUm hino de vitória eu vou cantar no céu. (2X)\n\nEu vou me consagrar, (bis)\nTenho gozo celeste e prazer em dizer:\nA Cristo, o meu bom Mestre, eu vou me consagrar. (2X)",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 43,
     "titulo": "Apocalipse 5:13",
+    "compositor": "Jorge Himitian",
     "letra": "Ao que está sentado no trono, e ao Cordeiro\nSeja o louvor, e a honra, e a glória,\nE o domínio, pelos séculos dos séculos, amém.",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 44,
@@ -675,20 +806,64 @@
   },
   {
     "id": 49,
-    "titulo": "A minh’alma engrandece ao Senhor",
+    "titulo": "Minh'alma Engrandece ao Senhor",
+    "compositor": "Asaph Borba",
     "letra": "A minh’alma engrandece ao Senhor,\nE o meu espírito se alegra em Deus, meu Salvador,\nPois com poder tem feito grandes coisas,\nE com misericórdia demonstrado amor.\n\nTem enchido nossas lâmpadas com o óleo do Espírito,\ntem feito sua vide florescer\nTem enchido nossas lâmpadas com o óleo do Espírito,\ntem feito sua vide florescer",
     "refrao": "Santo, santo, santo és, Senhor!\nSanto, santo, santo és, Senhor!",
     "cronologica": false,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      "",
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 50,
     "titulo": "Aqui viemos te adorar",
+    "compositor": "Esther de Souza",
     "letra": "Aqui viemos te adorar, ó Cristo,\nE proclamar o teu poder;\nNos levantamos para o teu louvor,\nJesus, Senhor, Rei, Salvador;\n\nAqui viemos por amor, ó Cristo,\nAceita a nossa adoração\nE as nossas vidas no altar de Deus!\nConfirma a nossa oração. (bis)",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 51,
@@ -740,13 +915,36 @@
   },
   {
     "id": 55,
-    "titulo": "Aleluia, aleluia, aleluia",
+    "titulo": "Canto a Ti, Senhor, Esta Canção",
+    "compositor": "Asaph Borba",
     "letra": "Porque me deste vida, quando havia morte em mim\nMe deste alegria, quando havia pranto em mim\nPor isso o meu cantar, por isso o meu louvor\nPor isso é que te dou o meu amor\n\nPorque Teu Santo Espírito, está sendo derramado\nE todo o Teu povo está sendo renovado\nPor isso o meu cantar, por isso o meu louvor\nPor isso é que te dou o meu amor",
     "refrao": "Aleluia, Aleluia, Aleluia\nCanto a Ti Senhor esta canção\nAleluia, Aleluia, Aleluia\nCanto a Ti Senhor com meu coração (bis)",
     "cronologica": true,
     "refraoPrimeiro": true,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 56,
@@ -764,23 +962,69 @@
   },
   {
     "id": 58,
-    "titulo": "Adoramos, adoramos",
+    "titulo": "Adoramos",
+    "compositor": "Asaph Borba",
     "letra": "Pois não há pecado ou culpa\nMaior que o seu amor\nNão há nada que façamos\nQue não possa perdoar\n\nNão há força nesta terra\nQue o possa derrotar\nNem cadeias ou prisões\nQue não possa rebentar",
     "refrao": "Adoramos, adoramos\nAquele que venceu\nAdoramos, adoramos\nA Cristo que venceu",
     "cronologica": true,
     "refraoPrimeiro": true,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 59,
     "titulo": "A vida que Cristo oferece",
+    "compositor": "Desconhecido",
     "letra": "A vida que Cristo oferece\nO mundo não pode lhe dar\n\nÉ vida pro seu coração\nÉ vida perfeita em amor\nÉ vida aos pés do senhor\nÉ vida de Deus em você\n\nÉ vida que nasce da morte\nÉ vida que traz o perdão\nÉ muito mais que uma religião\nÉ Cristo vivendo em você (bis)",
     "refrao": "",
     "cronologica": false,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 60,
@@ -908,9 +1152,39 @@
   {
     "id": 73,
     "titulo": "A alegria do Senhor a minha força é",
+    "compositor": "Desconhecido",
     "letra": "A alegria do Senhor a minha força é (3X)\nAlegria sem medida ele dá.\n\nSe tens alegria podes tu cantar (3X)\nAlegria sem medida ele dá.\n\nSe tens alegria podes tu orar (3X)\nAlegria sem medida ele dá.\n\nSe tens alegria podes tu vencer (3X)\nAlegria sem medida ele dá.\n\nSe tens alegria podes tu cantar\nSe tens alegria podes tu orar\nSe tens alegria podes tu vencer\nAlegria sem medida ele dá.",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 74,
@@ -932,19 +1206,64 @@
   {
     "id": 76,
     "titulo": "Andam procurando a razão de viver",
+    "compositor": "Jairo Trench Gonçalves",
     "letra": "Andam procurando a razão de viver\nNeste mundo mal querem a paz conhecer.\nFazem seus caminhos tentando achar\nAlgo que na vida valor possa dar.\n\nComo todo mundo também procurei\nE agora digo que a paz encontrei.\nCristo me salvou e eu quero falar\nQue uma vida nova Ele pode te dar.",
     "refrao": "Mas só Jesus pode dar a razão de viver\nGozo, paz e amor, só Jesus pode dar.\nE assim você será bem feliz, em Jesus.",
     "cronologica": true,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      "",
+      "",
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 77,
-    "titulo": "Antes mesmo que eu fosse alguém",
+    "titulo": "Algo Mais",
+    "compositor": "Wolodymir Boruszewski",
     "letra": "Antes mesmo que eu fosse alguém\nTu me amaste me disseste vem\nMesmo sendo tão rebelde e vão\nTu me amaste me estendeste a mão\n\nJá me deste tanto amor e paz\nQue eu só te peço uma coisinha a mais\nPra que eu possa cumprir a minha parte\nEnsina-me senhor a amar-te",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 78,
@@ -969,9 +1288,32 @@
   {
     "id": 80,
     "titulo": "Ao orarmos Senhor",
+    "compositor": "Ralph Richard Carmichael",
     "letra": "Ao orarmos, Senhor\nVem encher-nos com teu amor\nPara o mundo agitado esquecer\nCada dia tua vida viver\n\nNossas vidas vem pois transformar\nRefrigério pra alma nos dar\nE agora com outros irmãos\nNos unimos aqui em oração.",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 81,
@@ -986,11 +1328,27 @@
   {
     "id": 82,
     "titulo": "1 João. 1:9",
+    "compositor": "Grupo Elo",
     "letra": "Se confessarmos os nossos pecados\nEle é fiel e justo\nPara nos perdoar os pecados\ne nos purificar de toda injustiça.",
     "refrao": "",
     "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "song-82-1794415098359.mp3",
+    "audioNome": "I Joao 1 9.mp3"
   },
   {
     "id": 83,
@@ -1009,12 +1367,38 @@
   {
     "id": 85,
     "titulo": "Alto preço",
+    "compositor": "Asaph Borba",
     "letra": "Eu sei que foi pago um alto preço\nPara que contigo eu fosse um meu irmão\nQuando Jesus derramou Sua vida\nEle pensava em ti, Ele pensava em mim\nPensava em nós (2X)\n\nE nos via redimidos por Seu sangue\nLutando o bom combate do Senhor\nLado a lado trabalhando, sua Igreja edificando\nE rompendo as barreiras pelo amor\n\nE na força do Espírito Santo nós proclamamos aqui\nQue pagaremos o preço de sermos um só coração no Senhor\nE por mais que as trevas militem e nos tentem separar\nCom os nossos olhos em Cristo, unidos iremos andar (2X)",
     "refrao": "",
     "cronologica": false,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 86,
@@ -1105,19 +1489,81 @@
   {
     "id": 92,
     "titulo": "Autor da minha fé",
+    "compositor": "Grupo Logos",
     "letra": "Oh Pai, eu queria tanto ver\nO meu Senhor descer vindo me encontrar\nEu posso até imaginar a refulgente glória\nDo Senhor Jesus\n\nTranspondo as brancas nuvens no mais puro azul\nOnde nem sul, nem norte existirá\nE em meio a lágrimas, sorrisos de alegria e de prazer\nEu que era cego, agora posso ver\n\nContemplar, contemplar enfim\nPor isso eu canto glória\nGlória, glória ao autor da minha fé (2X)\n\nOh Pai, eu queria tanto, tanto ouvir\nO som que vai abrir o encontro triunfal\nRever amigos que um dia em Cristo foram\nFeitos meus irmãos\n\nE agora sim podemos dar as mãos\nPois temos todos um\nSomente um, um só Senhor\n\nE eis o consolo que envolve a minha vida\nO meu Senhor Jesus\nQue foi morto sim, naquela cruz\n\nVoltará, voltará enfim\nPor isso eu canto glória\nGlória, glória ao autor da minha fé (2X)",
     "refrao": "",
     "cronologica": false,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 94,
     "titulo": "A começar em mim",
+    "compositor": "Vencedores por Cristo",
     "letra": "A começar em mim, quebra corações\nPra que sejamos todos um, como tu és em nós\n\nOnde há frieza, que haja amor\nOnde há ódio o perdão\nPara que o teu corpo cresça assim\nRumo a perfeição",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 95,
@@ -1219,9 +1665,33 @@
   {
     "id": 105,
     "titulo": "Ao Único",
+    "compositor": "Benedito Carlos Gomes",
     "letra": "Ao único que é digno de receber\nA honra e a glória, a força e o poder\nAo Rei eterno imortal, invisível mas real\nA Ele, ministramos o louvor\n\nCoroado esta, ó rei Jesus\nCoroado esta, ó rei Jesus\nAdoramos o Teu nome\nNos rendemos aos Teus pés\nConsagramos todo nosso ser a ti",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 106,
@@ -1398,9 +1868,42 @@
   {
     "id": 114,
     "titulo": "Antífona",
+    "compositor": "Henry Maxwell Wright",
     "letra": "A Ti, ó Deus, fiel e bom Senhor\nEterno Pai, supremo Benfeitor\nNós os Teus servos, vimos dar louvor\nAleluia! Aleluia!\n\nA Ti, Deus Filho, Salvador Jesus\nDa graça a fonte, da verdade a Luz\nPor Teu amor, medido pela cruz\nAleluia! Aleluia!\n\nA Ti, ó Deus, real Consolador\nDivino fogo santificador\nQue nos anima e nos acende o amor\nAleluia! Aleluia!\n\nA Ti, Deus Trino, poderoso Deus\nQue estás presente sempre junto aos teus\nA ministrar as bênçãos lá dos céus\nAleluia! Aleluia!",
     "refrao": "",
-    "cronologica": false
+    "cronologica": false,
+    "refraoPrimeiro": false,
+    "somenteVozes": false,
+    "vozesLetra": [],
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 115,
@@ -1824,9 +2327,6 @@
     "id": 132,
     "titulo": "Êxodo",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "O dia enfim chegou, o cordeiro foi cortado\nEle vem pra nos visitar\nNa porta o sangue está, no crepúsculo da tarde\nEle vem pra nos libertar\n\nTodo escravo será livre, nenhum choro se ouvirá\nToda fome saciada, nossa voz ele ouviu\n\nNão há Deus como o nosso Deus\nNossa Força e canção\nGrandes coisas Ele fez\nSeu reino é pra sempre (2X)\n\nNa Cruz o sangue está, é sexta feira à tarde\nEle veio para nos salvar\n\nEsmagado o filho foi, Cristo está crucificado\nMorreu em nosso lugar.\n\nSua vida derramou, nenhuma condenação há\nNa montanha da caveira, ao nosso lado Deus está\n\nNão há Deus como o nosso Deus\nNossa Força e canção\nGrandes coisas Ele fez\nSeu reino é pra sempre (2X)\n\nPra nos dar sua doce graça, nos trouxe a redenção\nNão há mais razão pra chorar.\n\nNão há Deus como o nosso Deus\nNossa Força e canção\nGrandes coisas Ele fez\nSeu reino é pra sempre (2X)",
     "refrao": "",
     "cronologica": false,
@@ -1882,9 +2382,6 @@
     "id": 133,
     "titulo": "Até Outra Vez",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Que a estrada se abra à tua frente\nQue o vento sopre em teu rosto\nQue o Sol resplandeça em tua face\nE que a chuva caia suave em teus campos\nE mesmo ao se levantar sozinho\n\nQue as gotas da chuva em teu rosto\nCom a brisa lhe tragam alívio\nQue as tarefas comuns e diárias\nNão sejam um peso ao teu coração\nE mesmo ao se levantar sozinho",
     "refrao": "Que Deus lhe envolva em Seu amor\nE a paz encharque o coração\nE até nos vermos outra vez\nQue Deus lhe guarde em sua mão",
     "cronologica": true,
@@ -1990,22 +2487,63 @@
   {
     "id": 137,
     "titulo": "Amigo de Deus",
+    "compositor": "Adhemar de Campos",
     "letra": "Não existe nada melhor,\nDo que ser amigo de Deus,\nCaminhar seguro na luz,\nDesfrutar do seu amor,\n\nTer a paz no coração,\nViver sempre em comunhão.\nE assim perceber a grandeza do poder\nDe Jesus, meu bom pastor. (bis)",
     "refrao": "",
     "cronologica": false,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 138,
     "titulo": "A Ele a Glória",
+    "compositor": "Diante do Trono",
     "letra": "Porque Dele e por Ele,\npara Ele são todas as coisas\nPorque Dele e por Ele,\npara Ele são todas as coisas\n\nQuão profundas riquezas\nO saber e o conhecer de Deus\nQuão insondáveis\nSeus juízos e os Seus caminhos",
     "refrao": "A Ele a glória (3X)\nPra sempre, amém",
     "cronologica": true,
     "refraoPrimeiro": false,
+    "somenteVozes": false,
     "vozesLetra": [],
-    "vozesRefrao": []
+    "vozesRefrao": [],
+    "letraVozes": "",
+    "vozesArranjo": [],
+    "cifraLetra": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "cifraRefrao": [
+      "",
+      ""
+    ],
+    "audioArquivo": "",
+    "audioNome": ""
   },
   {
     "id": 139,
@@ -2342,10 +2880,7 @@
   {
     "id": 169,
     "titulo": "126 - Single",
-    "compositor": "",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
+    "compositor": "Projeto Sola",
     "letra": "Pareceu um sonho\nQuando Deus nos libertou\nHouve riso e canto\nMaravilhoso, eterno Senhor\nVem nos restaurar\nNos encher como um rio",
     "refrao": "Se sair a semear\nE as lágrimas do teu rosto\nNão pararem de cair\nLembre quem te libertou\nÉ a alegria que o fará\nVoltar a sonhar",
     "cronologica": true,
@@ -2378,9 +2913,6 @@
     "id": 170,
     "titulo": "Colossenses 1",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Ele é a imagem do Deus invisível\nEle é Senhor sobre a criação\n\nPois, Nele foram criadas\nTodas as coisas nos céus e na terra\nSejam tronos, soberanias\nPoderes ou autoridades\nEle é antes de tudo\nE a todos sustenta pela Palavra\nPois, foi do agrado de Deus\nQue em tudo Ele tenha\nSupremacia\n\nEle é o resplendor da glória do Pai\nEle é a exata expressão do seu ser\n\nPois, Nele foram criadas\nTodas as coisas nos céus e na terra\nSejam tronos, soberanias\nPoderes ou autoridades\nEle é antes de tudo\nE a todos sustenta pela Palavra\nPois, foi do agrado de Deus\nQue em tudo Ele tenha\nSupremacia\n\nJá não há mais nada\nQue a Ele não pertença\nEm tudo existe graça\nCantemos, sim\n\nJá não há mais nada\nQue a Ele não pertença\nEm tudo existe graça\nCantemos, sim",
     "refrao": "",
     "cronologica": false,
@@ -2437,9 +2969,6 @@
     "id": 171,
     "titulo": "Efésios 1",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Antes do tempo existir\nEscolheu-nos pra Si\nNos encontrou e por graça\nEle nos adotou\n\nPara Sua glória\nE pro Seu louvor\nPara Sua glória\nE pro Seu louvor\n\nAo Senhor, Deus Pai\nO louvor que transborda de nós\nO Seu povo está\nReunido em sincero fervor\nPara Sua glória\nE pro Seu louvor\n\nCristo e Seu sangue, a nós redenção concedeu\nCom o fim de nos tornar\nCoerdeiros de Deus\n\nPara sua glória\nE pro seu louvor\nPara sua glória\nE pro seu louvor\n\nAo Senhor, Deus Pai\nO louvor que transborda de nós\nO Seu povo está\nReunido em sincero fervor\nAo Senhor, Deus Pai\nO louvor que transborda de nós\nO Seu povo está\nReunido em sincero fervor\nPara Sua glória\nE pro Seu louvor\n\nE nós esperamos por Ti\nConfiantes\nQue lá no fim, nos resgatarás\nA promessa feita aqui (feita aqui)\nTraz certeza, todo viver pra Tua glória será\n\nE nós esperamos por Ti\nConfiantes\nQue lá no fim, nos resgatarás\nA promessa feita aqui (feita aqui)\nTraz certeza, todo viver pra Tua glória será\n\nAo Senhor, Deus Pai\nO louvor que transborda de nós\nO Seu povo está\nReunido em sincero fervor\nAo Senhor, Deus Pai\nO louvor que transborda de nós\nO Seu povo está\nReunido em sincero fervor\n\nPara sua glória\nE pro seu louvor\nPara sua glória\nE pro seu louvor",
     "refrao": "",
     "cronologica": false,
@@ -2523,9 +3052,6 @@
     "id": 172,
     "titulo": "Redenção",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Vivo, hoje estou aqui\nPois Ele decidiu me amar\nE então eu posso livre andar\n\nO Seu sangue sobre mim\nMe comprou, me restaurou\nSem culpa então me tornou\n\nO passado já não mais tem poder, pois novo sou\nNele vou viver, posso amar\nToda morte e o sofrer não me assustarão jamais\nPois foi Ele quem venceu em meu lugar\n\nJesus Cristo, Rei dos reis\nNos trouxe a redenção\nA esperança retornou\nGraça e paz nos revelou\n\nVivo, hoje estou aqui\nPois Ele decidiu me amar\nE então eu posso livre andar\n\nO Seu sangue sobre mim\nMe comprou, me restaurou\nSem culpa então me tornou\n\nO passado já não mais tem poder, pois novo sou\nNele vou viver, posso amar\nToda morte e o sofrer não me assustarão jamais\nPois foi Ele quem venceu em meu lugar\n\nTudo entregar, vou me render,\naos Seus pés vou me lançar\n[6X]\n\nO passado já não mais tem poder, pois novo sou\nNele vou viver, posso amar\nToda morte e o sofrer não me assustarão jamais\nPois foi Ele quem venceu em meu lugar\n\nJesus Cristo, Rei dos reis\nNos trouxe a redenção\nA esperança retornou\nGraça e paz nos revelou\n[4X]",
     "refrao": "",
     "cronologica": false,
@@ -2592,9 +3118,6 @@
     "id": 173,
     "titulo": "Gênesis",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Trago boas notícias\nDe paz e alegria\nVos nasceu o Salvador\nQue é Cristo, o Senhor\n\nToda Sua majestade\nA manjedoura acolheu\nPara reescrever a nossa história\nO menino Deus\n\nPaz na Terra entre os homens\nA quem Ele quer bem\nPaz na Terra entre os homens\nA quem Ele quer bem\n\nNuma noite escura\nVeio ao mundo a luz dos homens\nA esperança e âncora da alma\nQue a estrela anunciou\n\nO Messias prometido\nProfeta, Rei de justiça\nSacerdote para sempre\nJesus Cristo, o Senhor\n\nPaz na Terra entre os homens\nA quem Ele quer bem\nPaz na Terra entre os homens\nA quem Ele quer bem\n[2X]",
     "refrao": "",
     "cronologica": false,
@@ -2646,9 +3169,6 @@
     "id": 174,
     "titulo": "Oh Vinde Adoremos",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Ó vinde fiéis, triunfantes e alegres\nSim, vinde a Belém, já movidos de amor\nNasceu vosso Rei, o Messias prometido\nÓ vinde adoremos\nÓ vinde adoremos\nÓ vinde adoremos ao nosso Senhor\n\nOlhai, admirados, a sua humildade\nOs anjos o louvam com grande fervor\nPois veio conosco habitar, encarnado\nÓ vinde adoremos\nÓ vinde adoremos\nÓ vinde adoremos ao nosso Senhor!\n\nPor nós, das alturas celestes baixando\nEm forma de servo se fez por amor\nE em glórias a vida nos dá sempiterna\nÓ vinde adoremos\nÓ vinde adoremos\nÓ vinde adoremos ao nosso Senhor!\n\nNos céus, adorai-o, vós anjos em coro\nE todos na terra lhe rendam louvor\nA Deus, honra e glória contentes rendamos\nÓ vinde adoremos\nÓ vinde adoremos\nÓ vinde adoremos ao nosso Senhor!",
     "refrao": "",
     "cronologica": false,
@@ -2697,9 +3217,6 @@
     "id": 175,
     "titulo": "Filho de Deus",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "No princípio era Aquele que é a palavra\nEstava com Deus e era Deus\nPor meio dele, Deus fez todas as coisas\nNada existiria se não fosse por Ele\n\nEle é a luz que brilha na escuridão\nE as trevas não podem o deter\nA plenitude de toda criação\nPalavra eterna que se encarnou\n\nVejam é o Filho do homem\nCordeiro de Deus\nQue tira o pecado do mundo\nÉ o filho de Deus\nVestido de glória, graça e verdade\n\nEle é a luz que brilha na escuridão\nE as trevas não podem o deter\nA plenitude de toda criação\nPalavra eterna que se encarnou\n\nVejam é o Filho do homem\nCordeiro de Deus\nQue tira o pecado do mundo\nÉ o filho de Deus\nVestido de glória, graça e verdade\n\nVejam é o Filho do homem\nCordeiro de Deus\nQue tira o pecado do mundo\nÉ o filho de Deus\nVestido de glória, graça e verdade",
     "refrao": "",
     "cronologica": false,
@@ -2753,9 +3270,6 @@
     "id": 176,
     "titulo": "Glorificar",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Em cada canto deste mundo\nCada passo ecoar seu amor\nA sua redenção\n\nSempre a mesma bandeira\nQue não é sobre nós\nMas é Cristo, a luz, Senhor e Rei\n\nO grande Eu Sou, com Sua voz\nNos chama a existir, com Ele caminhar\nServir e amar, a Igreja\nO Seu santo nome, e até o fim sempre glorificar\n\nUm tesouro em vasos frágeis\nSua luz brilhou na escuridão\nEm nossos corações\n\nSomos servos desse amor\nMostrar o Seu poder\nGraça que é apesar de nós\n\nO grande Eu Sou, com Sua voz\nNos chama a existir, com Ele caminhar\nServir e amar, a Igreja\nO Seu santo nome, e até o fim sempre glorificar\n\nO grande Eu Sou, com Sua voz\nNos chama a existir, com Ele caminhar\nServir e amar, a Igreja\nO Seu santo nome, e até o fim sempre glorificar\n\nOh, oh, oh, oh\nOh, oh, oh, oh\nOh, oh, oh, oh\nOh, oh, oh, oh\n\nO grande Eu Sou, com Sua voz\nNos chama a existir, com Ele caminhar\nServir e amar, a Igreja\nO Seu santo nome, e até o fim\n\nO grande Eu Sou, com Sua voz\nNos chama a existir, com Ele caminhar\nServir e amar, a Igreja\nO Seu santo nome, e até o fim sempre glorificar\n\nEm todo lugar em cada expressão\nGlorificar\nSeja aqui ou além, e até o final\nGlorificar\n\nOh, oh, oh, oh\nOh, oh, oh, oh\nGlorificar!\n[4X]",
     "refrao": "",
     "cronologica": false,
@@ -2832,9 +3346,6 @@
     "id": 177,
     "titulo": "Confiança",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Pai, Deus poderoso, tem compaixão de mim\nPreciso da tua graça abundante aqui\nQuebra o meu coração e salva-me de mim\nFaz-me bem-aventurado em Ti\n\nPai, Deus de justiça, misericórdia e amor\nConfesso que me afastei, me esqueci de Ti\nEu não sou mais que os outros, me ensina a ver quem sou\nFaz-me doar ao invés de possuir\n\nEsvazia o meu ego, enche-me de Ti\nAjuda-me a confiar mesmo quando a confiança me faltar\nAjuda-me a enxergar mesmo\nQuando o meu olhar falhar\n\nPai, Deus poderoso, tem compaixão de mim\nPreciso da tua graça abundante aqui\nQuebra o meu coração e salva-me de mim\nFaz-me bem-aventurado em Ti\n\nPai, Deus de justiça, misericórdia e amor\nConfesso que me afastei, me esqueci de Ti\nEu não sou mais que os outros, me ensina a ver quem sou\nFaz-me doar ao invés de possuir\n\nEsvazia o meu ego, enche-me de Ti\nAjuda-me a confiar mesmo quando a confiança me faltar\nAjuda-me a enxergar mesmo\nQuando o meu olhar falhar\n\nAjuda-me a confiar mesmo quando a confiança me faltar\nAjuda-me a enxergar mesmo\nQuando o meu olhar falhar",
     "refrao": "",
     "cronologica": false,
@@ -2889,9 +3400,6 @@
     "id": 178,
     "titulo": "130",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Nas profundezas da dor\nElevo a Ti meu clamor\nEscuta minha voz\nOuve a minha oração, Senhor\n\nE se guardasse as transgressões\nO que seria de mim?\nMas me ofertas perdão\nE assim, aprendo a Te temer\nE assim, aprendo a Te temer\n\nEsperarei\nNo Deus, que em Sua palavra me guardou\nHei de ansiar\nPor Sua tão zelosa e forte mão\nSe a noite fria e escura\nNo caminho me alcançar\nDescansarei, confiante até chegar\n\nE se guardasse as transgressões\nO que seria de mim?\nMas me ofertas perdão\nE assim, aprendo a Te temer\nE assim, aprendo a Te temer\n\nEsperarei\nNo Deus, que em Sua palavra me guardou\nHei de ansiar\nPor Sua tão zelosa e forte mão\nSe a noite fria e escura\nNo caminho me alcançar\nDescansarei, confiante até chegar\n\nEm Cristo, firmada está\nMinha esperança até o fim\nNo amor, plena redenção\nConfiante então, descansarei\n\nEm Cristo, firmada está\nMinha esperança até o fim\nNo amor, plena redenção\nConfiante então, descansarei\nConfiante então, descansarei\n\nEsperarei\nNo Deus, que em Sua palavra me guardou\nHei de ansiar\nPor Sua tão zelosa e forte mão\nSe a noite fria e escura\nNo caminho me alcançar\nDescansarei, confiante até chegar\n\nDescansarei, confiante até chegar\n\nNas profundezas da dor\nElevo a Ti meu clamor\nEscuta a minha voz\nOuve a minha oração, Senhor\nOuve a minha oração",
     "refrao": "",
     "cronologica": false,
@@ -2972,9 +3480,6 @@
     "id": 179,
     "titulo": "Homem Deus",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "O céu escureceu\nA terra estremeceu\nAs rochas se partiram\nNa Cruz, estava o Homem Deus\nO sangue derramado\nLavou-nos do pecado\nO Santo Homem deu Sua vida pelos Seus\n\nCarregando a própria Cruz\nAo Calvário, Ele subiu\nE a sentença do pecado\nEstava sobre o Redentor\nCom o calcanhar ferido\nPra cumprir a profecia\nA cabeça da serpente, o Cordeiro esmagou\n\nMorte, onde está a sua vitória?\nA vida renasceu, o Rei ressuscitou\nMorte, onde está a sua vitória?\nA vida renasceu, o Rei ressuscitou\n\nO céu escureceu\nA terra estremeceu\nAs rochas se partiram\nNa Cruz, estava o Homem Deus\nO sangue derramado\nLavou-nos do pecado\nO Santo Homem deu Sua vida pelos Seus\n\nMorte, onde está a sua vitória?\nA vida renasceu, o Rei ressuscitou\nMorte, onde está a sua vitória?\nA vida renasceu, o Rei ressuscitou\n\nCarregando a própria Cruz\nAo Calvário, Ele subiu\nE a sentença do pecado\nEstava sobre o Redentor\nCom o calcanhar ferido\nPra cumprir a profecia\nA cabeça da serpente, o Cordeiro esmagou\n\nCarregando a própria Cruz\nAo Calvário, Ele subiu\nE a sentença do pecado\nEstava sobre o Redentor\nCom o calcanhar ferido\nPra cumprir a profecia\nA cabeça da serpente, o Cordeiro esmagou\n\n(Morte, onde está) A sua vitória?\nA vida renasceu, o Rei ressuscitou\nMorte, onde está a sua vitória?\nA vida renasceu, o Rei ressuscitou",
     "refrao": "",
     "cronologica": false,
@@ -3050,9 +3555,6 @@
     "id": 180,
     "titulo": "Das Trevas a Luz",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "O bom pastor, o pão da vida\nA porta pra entrar\nRessurreição, videira real\nCaminho, verdade\n\nA vida se manifestou\nComo um de nós se fez\nA Si Mesmo esvaziou\nO Seu sangue derramou\n\nServo sofredor\nA luz do mundo\nPromessa viva que se cumpriu\nPalavra que nos leva\nDas trevas à luz\nA escuridão não O venceu\n\nO Deus aqui\nO verbo que se encarnou\nA glória do Pai\nO começo, primeiro da criação\nE o sustento até o fim\n\nA vida se manifestou\nComo um de nós se fez\nA Si Mesmo esvaziou\nO Seu sangue derramou\n\nServo sofredor\nA luz do mundo\nPromessa viva que se cumpriu\nPalavra que nos leva\nDas trevas à luz\nA escuridão não O venceu",
     "refrao": "",
     "cronologica": false,
@@ -3107,11 +3609,7 @@
   {
     "id": 181,
     "titulo": "23",
-    "tema": "",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "O Senhor é o meu pastor\nE eu sei que nada irá me faltar\nEm campos bons me faz deitar\nPor águas calmas me levará\nOs meus pés fazes andar\nNa estrada da retidão\nSe do caminho eu desviar\nO teu castigo me consolará\n\nSe o Senhor é o meu pastor\nAquilo que eu não tenho\nEu não preciso\nSe o Senhor é o meu pastor\nAquilo que eu não tenho\nEu não preciso\n\nQuando no vale ter que passar\nNão temerei, pois sei que perto estás\nE se a morte me assombrar\nA tua graça me acolherá\nMisericórdia e compaixão\nTodos os dias me acompanharão\nE para sempre morarei\nNa eternidade onde estás\n\nSe o Senhor é o meu pastor\nAquilo que eu não tenho\nEu não preciso\nSe o Senhor é o meu pastor\nAquilo que eu não tenho\nEu não preciso desejar",
     "refrao": "",
     "cronologica": false,
@@ -3164,9 +3662,6 @@
     "id": 182,
     "titulo": "Então caí",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Sozinho volto a olhar\nE vejo o caminho que destruí\nTanta coisa, tudo se foi\nE o meu orgulho que se espalhou\n\nPassei a vida tentando ser\nAlguém maior que eu (que eu)\nCriei em mim uma mentira\nQue se despedaçou\nE então caí\n\nO meu coração aqui\nQuebrado e sem descansar\nSerá que ainda existe esperança\nSerá que o teu amor está aqui\n\nPassei a vida tentando ser\nAlguém maior que eu (que eu)\nCriei em mim uma mentira\nQue se despedaçou\nE então caí\n\nA tua voz eu posso ouvir\nDizendo para eu me acalmar\nQue nada, nada está perdido\nQue tudo novo se fará\n\nQue na verdade é você\nO alguém maior que eu (que eu)\nQue revelou toda mentira\nE me despedaçou\nE então sou Teu\n\nTua luz vai me encontrar\nTua graça me mudar\nE a esperança vai\nRenascer\n\nTua luz vai me encontrar\nTua graça me mudar\nE a esperança vai\nRenascer e então voltar",
     "refrao": "",
     "cronologica": false,
@@ -3230,9 +3725,6 @@
     "id": 183,
     "titulo": "Forte Mão",
     "compositor": "Projeto Sola",
-    "album": "",
-    "anoLancamento": "",
-    "adicionais": "",
     "letra": "Tu és o nosso salvador\nPoderoso e grande Deus\nPara sempre é o Teu amor\nE chamas pra Ti os que são Teus\n\nO Teu trono está no altos céus\nMas vive no meio de nós\nE quando em severa tentação\nNos salvou Tua forte mão\n\nAo som da Tua voz se fez o céu, a terra e o mar\nE se aflito eu estiver, Tua paz há de reinar\nTal como o vapor a minha vida há de passar\nMas seguro estou, em Tua graça vou descansar\n\nResgatados pela Tua cruz\nPreservados em amor\nQue pela graça que há em Ti\nConcedeu-nos o favor\n\n[INÍCIO NARRAÇÃO]\nQuatro solas, mais um\nSomente Cristo\nSomente a escritura\nSomente graça\nSomente fé\nPor isso e não menos\nSomente a Deus, glória\n\nSolas são os somentes\nSão da eternidade, sementes\nSolas comunicam nada além, nada aquém\nA escritura que do Cristo testemunha\nCristo que da escritura surge a nós\n\nComo texto que vira vida, vira a vida\nVida que vira testemunha do Cristo da escritura\nDo Cristo da vida\nGraça que é poesia\nDo amor incondicional, irresistível\n\nO abraço oferecido ao coração esquecido\nO perdão concedido ao que se sabe perdido\nO olhar terno do eterno\nA lágrima que lava o rosto do Pai feliz\nPelo filho sumido\n\nQue no colo do Pai encontra abrigo\nGraça que o coração duro encanta\nAquece, emudece, espanta\nGraça que é perdão\nQue agride a razão\nLoucura e escândalo da cruz\n\nAmor perfeito que a fé conduz\nE nela encontra novo chão\nOnde não chega a razão\nFé que é caminho\nOnde nunca se está sozinho\n\nNo Cristo inicia, anda, termina\nSola que pisa o caminho\nVerdade que consola e confronta\nVida que em tudo transborda\nVida que em Cristo tudo transforma\n[FIM DA NARRAÇÃO]\n\nAo som da Tua voz se fez o céu, a terra e o mar\nE se aflito eu estiver, Tua paz há de reinar\nTal como o vapor a minha vida há de passar\nMas seguro estou, em Tua graça vou descansar",
     "refrao": "",
     "cronologica": false,

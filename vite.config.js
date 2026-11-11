@@ -154,8 +154,17 @@ export default defineConfig(({ mode }) => {
   const defaultBase =
     process.env.GITHUB_ACTIONS === "true" && repoName ? `/${repoName}/` : "/";
 
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, "0");
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const yy = String(now.getFullYear()).slice(-2);
+  const versionDate = `${dd}.${mm}.${yy}`;
+
   return {
     base: env.VITE_BASE || defaultBase,
+    define: {
+      __APP_VERSION_DATE__: JSON.stringify(versionDate),
+    },
     resolve: {
       alias: {
         "@": path.resolve(root, "./src"),

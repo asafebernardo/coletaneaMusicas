@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { canManageSongs } from "@/lib/songs.js";
 import { getAccentHex, useAccent, useTheme } from "@/lib/theme.js";
 
 const barItem =
@@ -6,10 +7,16 @@ const barItem =
 const barOn = "text-pine";
 const barOff = "text-ink-soft hover:text-ink";
 
+const MORE_PATHS = new Set(["/mais", "/categorias", "/sobre", "/configuracoes", "/admin"]);
+
 export default function HomeLayout() {
+  const canManage = canManageSongs();
+  const { pathname } = useLocation();
   const theme = useTheme();
   const accent = useAccent();
   const activeColor = getAccentHex(theme, accent);
+  const isMoreActive = MORE_PATHS.has(pathname);
+  const isCatalog = !isMoreActive;
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
@@ -17,40 +24,47 @@ export default function HomeLayout() {
         <Outlet />
       </div>
 
-      <nav
-        aria-label="Navegação principal"
-        data-accent={accent}
-        className="grid shrink-0 grid-cols-3 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
-      >
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
-          style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
-          aria-label="Louvor"
+      <div className="relative shrink-0">
+        {canManage && isCatalog ? (
+          <div className="pointer-events-none absolute bottom-full right-3 z-20 mb-3">
+            <div className="pointer-events-auto inline-flex h-9 items-center rounded-full border border-line bg-card p-0.5 shadow-lg">
+              <Link
+                to="/musicas/nova"
+                className="inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-sm text-ink hover:bg-paper focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
+              >
+                <PlusIcon />
+                Nova
+              </Link>
+            </div>
+          </div>
+        ) : null}
+
+        <nav
+          aria-label="Navegação principal"
+          data-accent={accent}
+          className="grid shrink-0 grid-cols-2 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
         >
-          <PraiseIcon />
-          Louvor
-        </NavLink>
-        <NavLink
-          to="/categorias"
-          className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
-          style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
-          aria-label="Categorias"
-        >
-          <CategoriesIcon />
-          Categorias
-        </NavLink>
-        <NavLink
-          to="/configuracoes"
-          className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
-          style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
-          aria-label="Configurações"
-        >
-          <SettingsIcon />
-          Configurações
-        </NavLink>
-      </nav>
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) => `${barItem} ${isActive ? barOn : barOff}`}
+            style={({ isActive }) => (isActive ? { color: activeColor } : undefined)}
+            aria-label="Louvor"
+          >
+            <PraiseIcon />
+            Louvor
+          </NavLink>
+          <NavLink
+            to="/mais"
+            className={() => `${barItem} ${isMoreActive ? barOn : barOff}`}
+            style={() => (isMoreActive ? { color: activeColor } : undefined)}
+            aria-label="Mais+"
+          >
+            <MoreIcon />
+            Mais+
+          </NavLink>
+        </nav>
+      </div>
     </div>
   );
 }
@@ -74,7 +88,7 @@ function PraiseIcon() {
   );
 }
 
-function CategoriesIcon() {
+function MoreIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -89,25 +103,26 @@ function CategoriesIcon() {
       <rect x="3" y="3" width="7" height="7" rx="1.5" />
       <rect x="14" y="3" width="7" height="7" rx="1.5" />
       <rect x="3" y="14" width="7" height="7" rx="1.5" />
-      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      <path d="M17.5 14v7" />
+      <path d="M14 17.5h7" />
     </svg>
   );
 }
 
-function SettingsIcon() {
+function PlusIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
       aria-hidden
-      className="h-5 w-5 shrink-0"
+      className="h-3.5 w-3.5"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
     </svg>
   );
 }

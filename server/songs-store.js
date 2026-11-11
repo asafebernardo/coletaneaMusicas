@@ -153,7 +153,12 @@ const droppedKeys = [
   "numero",
   "autor",
   "autorId",
+  "compositor",
+  "tema",
   "temaId",
+  "album",
+  "anoLancamento",
+  "adicionais",
   "banda",
   "vozesSeparadas",
   "vozesTodas",
@@ -174,11 +179,6 @@ function presentSongs(songs) {
 
 export function validateSong(input) {
   const titulo = String(input?.titulo ?? "").trim();
-  const tema = String(input?.tema ?? "").trim().slice(0, 500);
-  const compositor = String(input?.compositor ?? "").trim().slice(0, 200);
-  const album = String(input?.album ?? "").trim().slice(0, 200);
-  const anoLancamento = String(input?.anoLancamento ?? "").trim().slice(0, 20);
-  const adicionais = String(input?.adicionais ?? "").trim().slice(0, 2000);
   const vozesPack = packLyrics(input?.letraVozes ?? "", input?.vozesArranjo);
   const hasArranjoVoices = Boolean(vozesPack.text);
   const letraRaw = String(input?.letra ?? "").trim() ? input?.letra : vozesPack.text;
@@ -204,11 +204,6 @@ export function validateSong(input) {
   return {
     value: {
       titulo,
-      tema,
-      compositor,
-      album,
-      anoLancamento,
-      adicionais,
       letra,
       refrao,
       cronologica,

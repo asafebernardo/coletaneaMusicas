@@ -280,24 +280,6 @@ export default function SongPage() {
               className="hidden"
             />
           ) : null}
-          {song ? (
-            <Link
-              to={`/musicas/${song.id}/info`}
-              aria-label="Informações da música"
-              className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full text-white/90 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              <InfoIcon />
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              aria-label="Informações da música (indisponível)"
-              className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-white/35"
-            >
-              <InfoIcon />
-            </button>
-          )}
         </div>
       </header>
 
@@ -845,25 +827,6 @@ function StopIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden className="h-3.5 w-3.5 shrink-0" fill="currentColor">
       <rect x="6" y="6" width="12" height="12" rx="1.8" />
-    </svg>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      className="h-5 w-5 shrink-0"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 11v5" />
-      <circle cx="12" cy="8" r="0.8" fill="currentColor" stroke="none" />
     </svg>
   );
 }

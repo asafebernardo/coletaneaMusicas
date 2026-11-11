@@ -11,18 +11,11 @@ import ChordEditor from "@/components/ChordEditor.jsx";
 import { splitLyrics } from "@/components/Lyrics.jsx";
 import LyricEditor from "@/components/LyricEditor.jsx";
 import VocalArrangementEditor from "@/components/VocalArrangementEditor.jsx";
-import { DEFAULT_THEMES } from "@/data/themes.js";
 import { packChordLines, syncChordLines } from "@/lib/chords.js";
-import { fold, splitLabels } from "@/lib/songs.js";
 import { buildFullSongLyrics, hasMarkedVoices, packLyrics } from "@/lib/voices.js";
 
 const emptyForm = {
   titulo: "",
-  tema: "",
-  compositor: "",
-  album: "",
-  anoLancamento: "",
-  adicionais: "",
   audioArquivo: "",
   audioNome: "",
   audioDataUrl: "",
@@ -71,11 +64,6 @@ function fieldsFromSong(song) {
 
   return {
     titulo: song.titulo || "",
-    tema: song.tema || "",
-    compositor: song.compositor || "",
-    album: song.album || "",
-    anoLancamento: song.anoLancamento || "",
-    adicionais: song.adicionais || "",
     audioArquivo: song.audioArquivo || "",
     audioNome: song.audioNome || "",
     audioDataUrl: "",
@@ -105,7 +93,7 @@ export default function SongFormPage() {
   const initialTab = searchParams.get("aba");
   const [form, setForm] = useState(emptyForm);
   const [contentTab, setContentTab] = useState(
-    VALID_TABS.has(initialTab) ? initialTab : "letra",
+    VALID_TABS.has(initialTab) ? initialTab : "info",
   );
   const [status, setStatus] = useState(editing ? "loading" : "ready");
   const [error, setError] = useState("");
@@ -172,6 +160,11 @@ export default function SongFormPage() {
 
   const submit = async (event) => {
     event.preventDefault();
+    if (!form.titulo.trim()) {
+      setContentTab("info");
+      setError(messageForSongError(new Error("titulo_invalido")));
+      return;
+    }
     setSaving(true);
     setError("");
     const baseLetra = form.letra.trim() ? form.letra : form.letraVozes;
@@ -182,11 +175,6 @@ export default function SongFormPage() {
 
     const payload = {
       titulo: form.titulo.trim(),
-      tema: form.tema.trim(),
-      compositor: form.compositor.trim(),
-      album: form.album.trim(),
-      anoLancamento: form.anoLancamento.trim(),
-      adicionais: form.adicionais.trim(),
       audioDataUrl: form.audioDataUrl || undefined,
       audioNome: form.audioNome || undefined,
       removeAudio: Boolean(form.removeAudio),
@@ -251,6 +239,9 @@ export default function SongFormPage() {
               role="tablist"
               aria-label="Conteúdo da música"
             >
+              <TabButton active={contentTab === "info"} onClick={() => setContentTab("info")}>
+                Info
+              </TabButton>
               <TabButton active={contentTab === "letra"} onClick={() => setContentTab("letra")}>
                 Letra
               </TabButton>
@@ -260,27 +251,6 @@ export default function SongFormPage() {
               <TabButton active={contentTab === "cifra"} onClick={() => setContentTab("cifra")}>
                 Cifra
               </TabButton>
-              <TabButton active={contentTab === "info"} onClick={() => setContentTab("info")}>
-                Info
-              </TabButton>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block space-y-1.5">
-                <span className="text-xs font-medium text-ink-soft">Título</span>
-                <input
-                  className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
-                  placeholder="Título da música"
-                  value={form.titulo}
-                  onChange={setField("titulo")}
-                  maxLength={200}
-                  aria-describedby="titulo-numero"
-                  required
-                />
-              </label>
-              <p id="titulo-numero" className="text-xs leading-relaxed text-ink-soft">
-                O número segue a ordem alfabética do título e muda quando a coletânea muda.
-              </p>
             </div>
 
             {contentTab === "letra" ? (
@@ -405,104 +375,22 @@ export default function SongFormPage() {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-ink-soft">Tema</span>
-                    {splitLabels(form.tema).length > 0 ? (
-                      <span className="text-xs font-medium text-pine">
-                        {splitLabels(form.tema).length} selecionado(s)
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="max-h-72 divide-y divide-line overflow-y-auto rounded-xl border border-line bg-paper">
-                    {DEFAULT_THEMES.map((option) => {
-                      const currentLabels = splitLabels(form.tema);
-                      const checked = currentLabels.some(
-                        (item) => fold(item) === fold(option.label),
-                      );
-                      return (
-                        <label
-                          key={option.label}
-                          className="flex cursor-pointer items-start gap-3 px-3 py-2.5 transition-colors hover:bg-card/60"
-                        >
-                          <input
-                            type="checkbox"
-                            className="mt-0.5 h-4 w-4 shrink-0 accent-pine"
-                            checked={checked}
-                            onChange={(event) => {
-                              const nextChecked = event.target.checked;
-                              setForm((current) => {
-                                const list = splitLabels(current.tema).filter(
-                                  (item) => fold(item) !== fold(option.label),
-                                );
-                                if (nextChecked) {
-                                  list.push(option.label);
-                                }
-                                return {
-                                  ...current,
-                                  tema: list.join(", "),
-                                };
-                              });
-                            }}
-                          />
-                          <span className="min-w-0 flex-1">
-                            <span className="block text-sm font-medium text-ink">
-                              {option.label}
-                            </span>
-                            <span className="mt-0.5 block text-xs leading-snug text-ink-soft">
-                              {option.description}
-                            </span>
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-medium text-ink-soft">Título</span>
+                    <input
+                      className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
+                      placeholder="Título da música"
+                      value={form.titulo}
+                      onChange={setField("titulo")}
+                      maxLength={200}
+                      aria-describedby="titulo-numero"
+                      required
+                    />
+                  </label>
+                  <p id="titulo-numero" className="text-xs leading-relaxed text-ink-soft">
+                    O número segue a ordem alfabética do título e muda quando a coletânea muda.
+                  </p>
                 </div>
-
-                <label className="block space-y-1.5">
-                  <span className="text-xs font-medium text-ink-soft">Compositor</span>
-                  <input
-                    className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
-                    placeholder="Nome do compositor"
-                    value={form.compositor}
-                    onChange={setField("compositor")}
-                    maxLength={200}
-                  />
-                </label>
-
-                <label className="block space-y-1.5">
-                  <span className="text-xs font-medium text-ink-soft">Álbum</span>
-                  <input
-                    className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
-                    placeholder="Nome do álbum"
-                    value={form.album}
-                    onChange={setField("album")}
-                    maxLength={200}
-                  />
-                </label>
-
-                <label className="block space-y-1.5">
-                  <span className="text-xs font-medium text-ink-soft">Ano de Lançamento</span>
-                  <input
-                    className="h-11 w-full rounded-xl border border-line bg-paper px-3 outline-none ring-pine focus:ring-2"
-                    placeholder="Ex.: 2020"
-                    inputMode="numeric"
-                    value={form.anoLancamento}
-                    onChange={setField("anoLancamento")}
-                    maxLength={20}
-                  />
-                </label>
-
-                <label className="block space-y-1.5">
-                  <span className="text-xs font-medium text-ink-soft">Adicionais</span>
-                  <textarea
-                    rows={4}
-                    className="w-full rounded-xl border border-line bg-paper px-3 py-2.5 text-sm leading-relaxed outline-none ring-pine focus:ring-2"
-                    placeholder="Informações adicionais sobre a música"
-                    value={form.adicionais}
-                    onChange={setField("adicionais")}
-                    maxLength={2000}
-                  />
-                </label>
 
                 <div className="space-y-1.5">
                   <span className="block text-xs font-medium text-ink-soft">
