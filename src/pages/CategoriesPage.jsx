@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { listSongs, messageForSongError } from "@/api/songs.js";
 import MarqueeText from "@/components/MarqueeText.jsx";
+import { THEME_DESCRIPTIONS } from "@/data/themes.js";
 import { groupSongs, splitLabels } from "@/lib/songs.js";
 
 const CATEGORY_OPTIONS = [
@@ -83,24 +84,22 @@ export default function CategoriesPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 border-b border-pine-dark bg-pine px-4 py-3 text-white shadow-sm landscape-mobile:py-2">
-        <div className="flex items-center gap-2">
-          {activeCategory ? (
-            <button
-              type="button"
-              onClick={clearCategory}
-              aria-label="Voltar para categorias"
-              className="inline-flex h-9 w-9 -ml-1.5 shrink-0 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-            >
-              <span aria-hidden className="text-xl leading-none">
-                ‹
-              </span>
-            </button>
-          ) : null}
-          <h1 className="text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
-            {activeCategory ? activeCategory.label : "Categorias"}
-          </h1>
-        </div>
+      <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-pine-dark bg-pine px-4 text-white shadow-sm landscape-mobile:h-11">
+        {activeCategory ? (
+          <button
+            type="button"
+            onClick={clearCategory}
+            aria-label="Voltar para categorias"
+            className="inline-flex h-10 w-10 -ml-2 shrink-0 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8 landscape-mobile:w-8"
+          >
+            <span aria-hidden className="text-xl leading-none">
+              ‹
+            </span>
+          </button>
+        ) : null}
+        <h1 className="min-w-0 flex-1 truncate text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
+          {activeCategory ? activeCategory.label : "Categorias"}
+        </h1>
       </header>
 
       {!activeCategory ? (
@@ -156,6 +155,10 @@ export default function CategoriesPage() {
         <ul className="divide-y divide-line/80">
           {groupsByCategory[activeCategory.id].map((group) => {
             const expanded = openGroup === group.label;
+            const themeDescription =
+              activeCategory.id === "temas"
+                ? THEME_DESCRIPTIONS.get(group.label.toLowerCase())
+                : "";
             return (
               <li key={group.label}>
                 <button
@@ -164,8 +167,15 @@ export default function CategoriesPage() {
                   onClick={() => setOpenGroup(expanded ? "" : group.label)}
                   className="flex min-h-14 w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-paper"
                 >
-                  <span className="min-w-0 flex-1 truncate text-[15px] font-medium">
-                    {group.label}
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[15px] font-medium text-ink">
+                      {group.label}
+                    </span>
+                    {themeDescription ? (
+                      <span className="mt-0.5 block truncate text-xs leading-snug text-ink-soft">
+                        {themeDescription}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="shrink-0 rounded-full border border-line bg-paper px-2.5 py-0.5 text-xs font-medium text-ink-soft tabular-nums">
                     {group.songs.length}

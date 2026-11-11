@@ -38,6 +38,7 @@ export default function SongInfoPage() {
   const infoItems = song
     ? [
         { label: "Título", value: song.titulo },
+        { label: "Tema", value: song.tema },
         { label: "Compositor", value: song.compositor },
         { label: "Álbum", value: song.album },
         { label: "Ano de Lançamento", value: song.anoLancamento },
@@ -47,8 +48,8 @@ export default function SongInfoPage() {
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="shrink-0 border-b border-pine-dark bg-pine px-2 py-2 text-white shadow-sm landscape-mobile:py-1">
-        <div className="flex items-center gap-1">
+      <header className="flex h-14 shrink-0 items-center border-b border-pine-dark bg-pine px-2 text-white shadow-sm landscape-mobile:h-11">
+        <div className="flex w-full items-center gap-1">
           <Link
             to={idOk ? `/musicas/${numericId}` : "/"}
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white landscape-mobile:h-8 landscape-mobile:w-8"

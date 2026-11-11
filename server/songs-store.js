@@ -152,7 +152,6 @@ async function readSongs() {
 const droppedKeys = [
   "numero",
   "autor",
-  "tema",
   "autorId",
   "temaId",
   "banda",
@@ -175,6 +174,7 @@ function presentSongs(songs) {
 
 export function validateSong(input) {
   const titulo = String(input?.titulo ?? "").trim();
+  const tema = String(input?.tema ?? "").trim().slice(0, 500);
   const compositor = String(input?.compositor ?? "").trim().slice(0, 200);
   const album = String(input?.album ?? "").trim().slice(0, 200);
   const anoLancamento = String(input?.anoLancamento ?? "").trim().slice(0, 20);
@@ -204,6 +204,7 @@ export function validateSong(input) {
   return {
     value: {
       titulo,
+      tema,
       compositor,
       album,
       anoLancamento,

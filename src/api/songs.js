@@ -1,10 +1,33 @@
+import { withNumbers } from "@/lib/songs.js";
+
 /**
- * Cliente da API local. O número é a posição alfabética do título.
+ * Cliente da API local com fallback estático para GitHub Pages.
+ * O número é a posição alfabética do título.
  * Não há chamada ao site ICER.
  */
 
+const basePrefix = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+
+export function getAudioUrl(audioArquivo) {
+  const safe = String(audioArquivo ?? "").trim();
+  if (!safe) return "";
+  return `${basePrefix}/data/audios/${encodeURIComponent(safe)}`;
+}
+
+async function readStaticCatalog() {
+  const response = await fetch(`${basePrefix}/data/songs.json`);
+  if (!response.ok) {
+    throw new Error("erro_interno");
+  }
+  const data = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error("erro_interno");
+  }
+  return withNumbers(data);
+}
+
 export async function request(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(`${basePrefix}${path}`, {
     headers: {
       "Content-Type": "application/json",
       ...(options.headers || {}),
@@ -13,6 +36,13 @@ export async function request(path, options = {}) {
   });
 
   if (response.status === 204) return null;
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const error = new Error("api_indisponivel");
+    error.status = response.status;
+    throw error;
+  }
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -23,12 +53,30 @@ export async function request(path, options = {}) {
   return data;
 }
 
-export function listSongs() {
-  return request("/api/songs");
+export async function listSongs() {
+  try {
+    return await request("/api/songs");
+  } catch {
+    return readStaticCatalog();
+  }
 }
 
-export function getSong(id) {
-  return request(`/api/songs/${id}`);
+export async function getSong(id) {
+  try {
+    return await request(`/api/songs/${id}`);
+  } catch (err) {
+    if (err?.status === 404 && err?.message === "nao_encontrada") {
+      throw err;
+    }
+    const songs = await readStaticCatalog();
+    const found = songs.find((song) => Number(song.id) === Number(id));
+    if (!found) {
+      const notFound = new Error("nao_encontrada");
+      notFound.status = 404;
+      throw notFound;
+    }
+    return found;
+  }
 }
 
 export function createSong(song) {

@@ -1,11 +1,11 @@
-const CACHE_NAME = "coletanea-louvor-v1";
+const CACHE_NAME = "coletanea-louvor-v2";
 const PRECACHE_URLS = [
-  "/",
-  "/index.html",
-  "/manifest.webmanifest",
-  "/C.L.png",
-  "/icon-192.png",
-  "/icon-512.png",
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./C.L.png",
+  "./icon-192.png",
+  "./icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
@@ -44,14 +44,18 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/@") ||
     url.pathname.startsWith("/src/") ||
     url.pathname.startsWith("/node_modules/") ||
-    url.pathname.startsWith("/api/audios/") ||
+    url.pathname.includes("/audios/") ||
     request.headers.has("range")
   ) {
     return;
   }
 
-  // Network-first for API and navigation requests (fallback to cache when offline)
-  if (url.pathname.startsWith("/api/") || request.mode === "navigate") {
+  // Network-first for API, static catalog json, and navigation requests (fallback to cache when offline)
+  if (
+    url.pathname.includes("/api/") ||
+    url.pathname.endsWith("/data/songs.json") ||
+    request.mode === "navigate"
+  ) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -65,7 +69,7 @@ self.addEventListener("fetch", (event) => {
           const cached = await caches.match(request);
           if (cached) return cached;
           if (request.mode === "navigate") {
-            return caches.match("/index.html");
+            return caches.match("./index.html");
           }
           throw new Error("offline");
         }),

@@ -1,3 +1,4 @@
+import { copyFile, cp, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
@@ -59,6 +60,11 @@ function localSongsApiPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url || "/", "http://localhost");
+        const dataAudioMatch = url.pathname.match(/\/data\/audios\/([^/]+)$/);
+        if (dataAudioMatch && (req.method === "GET" || req.method === "HEAD")) {
+          await streamAudioFile(decodeURIComponent(dataAudioMatch[1]), req, res);
+          return;
+        }
         if (!url.pathname.startsWith("/api/")) {
           next();
           return;
@@ -117,15 +123,39 @@ function localSongsApiPlugin() {
         }
       });
     },
+    async closeBundle() {
+      const distDir = path.join(root, "dist");
+      const distDataDir = path.join(distDir, "data");
+      await mkdir(distDataDir, { recursive: true });
+      await copyFile(
+        path.join(root, "data", "songs.json"),
+        path.join(distDataDir, "songs.json"),
+      );
+      try {
+        await cp(path.join(root, "data", "audios"), path.join(distDataDir, "audios"), {
+          recursive: true,
+        });
+      } catch {
+        /* data/audios may not exist yet */
+      }
+      try {
+        await copyFile(path.join(distDir, "index.html"), path.join(distDir, "404.html"));
+      } catch {
+        /* ignore */
+      }
+    },
   };
 }
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const apiTarget = env.VITE_DEV_API_URL || "http://127.0.0.1:3002";
+  const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1];
+  const defaultBase =
+    process.env.GITHUB_ACTIONS === "true" && repoName ? `/${repoName}/` : "/";
 
   return {
-    base: env.VITE_BASE || "/",
+    base: env.VITE_BASE || defaultBase,
     resolve: {
       alias: {
         "@": path.resolve(root, "./src"),

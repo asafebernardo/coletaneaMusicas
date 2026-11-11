@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { createSong, getSong, messageForSongError, updateSong } from "@/api/songs.js";
+import {
+  createSong,
+  getAudioUrl,
+  getSong,
+  messageForSongError,
+  updateSong,
+} from "@/api/songs.js";
 import ChordEditor from "@/components/ChordEditor.jsx";
 import { splitLyrics } from "@/components/Lyrics.jsx";
 import LyricEditor from "@/components/LyricEditor.jsx";
 import VocalArrangementEditor from "@/components/VocalArrangementEditor.jsx";
+import { DEFAULT_THEMES } from "@/data/themes.js";
 import { packChordLines, syncChordLines } from "@/lib/chords.js";
+import { fold, splitLabels } from "@/lib/songs.js";
 import { buildFullSongLyrics, hasMarkedVoices, packLyrics } from "@/lib/voices.js";
 
 const emptyForm = {
   titulo: "",
+  tema: "",
   compositor: "",
   album: "",
   anoLancamento: "",
@@ -62,6 +71,7 @@ function fieldsFromSong(song) {
 
   return {
     titulo: song.titulo || "",
+    tema: song.tema || "",
     compositor: song.compositor || "",
     album: song.album || "",
     anoLancamento: song.anoLancamento || "",
@@ -172,6 +182,7 @@ export default function SongFormPage() {
 
     const payload = {
       titulo: form.titulo.trim(),
+      tema: form.tema.trim(),
       compositor: form.compositor.trim(),
       album: form.album.trim(),
       anoLancamento: form.anoLancamento.trim(),
@@ -204,7 +215,7 @@ export default function SongFormPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <header className="sticky top-0 z-10 flex shrink-0 items-center gap-1 border-b border-pine-dark bg-pine px-2 py-2 text-white shadow-sm landscape-mobile:py-1">
+      <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-1 border-b border-pine-dark bg-pine px-2 text-white shadow-sm landscape-mobile:h-11">
         <Link
           to={editing ? `/musicas/${id}` : "/"}
           className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
@@ -393,6 +404,60 @@ export default function SongFormPage() {
               </>
             ) : (
               <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-medium text-ink-soft">Tema</span>
+                    {splitLabels(form.tema).length > 0 ? (
+                      <span className="text-xs font-medium text-pine">
+                        {splitLabels(form.tema).length} selecionado(s)
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="max-h-72 divide-y divide-line overflow-y-auto rounded-xl border border-line bg-paper">
+                    {DEFAULT_THEMES.map((option) => {
+                      const currentLabels = splitLabels(form.tema);
+                      const checked = currentLabels.some(
+                        (item) => fold(item) === fold(option.label),
+                      );
+                      return (
+                        <label
+                          key={option.label}
+                          className="flex cursor-pointer items-start gap-3 px-3 py-2.5 transition-colors hover:bg-card/60"
+                        >
+                          <input
+                            type="checkbox"
+                            className="mt-0.5 h-4 w-4 shrink-0 accent-pine"
+                            checked={checked}
+                            onChange={(event) => {
+                              const nextChecked = event.target.checked;
+                              setForm((current) => {
+                                const list = splitLabels(current.tema).filter(
+                                  (item) => fold(item) !== fold(option.label),
+                                );
+                                if (nextChecked) {
+                                  list.push(option.label);
+                                }
+                                return {
+                                  ...current,
+                                  tema: list.join(", "),
+                                };
+                              });
+                            }}
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-sm font-medium text-ink">
+                              {option.label}
+                            </span>
+                            <span className="mt-0.5 block text-xs leading-snug text-ink-soft">
+                              {option.description}
+                            </span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <label className="block space-y-1.5">
                   <span className="text-xs font-medium text-ink-soft">Compositor</span>
                   <input
@@ -471,10 +536,7 @@ export default function SongFormPage() {
                       <audio
                         controls
                         preload="metadata"
-                        src={
-                          form.audioDataUrl ||
-                          `/api/audios/${encodeURIComponent(form.audioArquivo)}`
-                        }
+                        src={form.audioDataUrl || getAudioUrl(form.audioArquivo)}
                         className="h-9 w-full"
                       />
                     </div>

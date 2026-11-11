@@ -2,10 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
+import { initPwa } from "@/lib/pwa.js";
 import { initTheme } from "@/lib/theme.js";
 import "./index.css";
 
 initTheme();
+initPwa();
 
 const rawBase = import.meta.env.BASE_URL || "/";
 const basename = rawBase === "/" ? undefined : rawBase.replace(/\/$/, "");

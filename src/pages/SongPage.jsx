@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deleteSong, getSong, messageForSongError } from "@/api/songs.js";
+import { deleteSong, getAudioUrl, getSong, messageForSongError } from "@/api/songs.js";
 import Lyrics from "@/components/Lyrics.jsx";
 import MarqueeText from "@/components/MarqueeText.jsx";
 import SongScroll from "@/components/SongScroll.jsx";
@@ -56,7 +56,7 @@ export default function SongPage() {
   const seekingRef = useRef(false);
   const theme = useTheme();
   const hasAudio = Boolean(song?.audioArquivo);
-  const audioUrl = hasAudio ? `/api/audios/${encodeURIComponent(song.audioArquivo)}` : "";
+  const audioUrl = hasAudio ? getAudioUrl(song.audioArquivo) : "";
   const progressPercent =
     audioDuration > 0 ? Math.min(100, Math.max(0, (audioTime / audioDuration) * 100)) : 0;
   const hasVoices = songHasVoices(song);
@@ -191,8 +191,8 @@ export default function SongPage() {
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-      <header className="relative z-20 shrink-0 border-b border-pine-dark bg-pine px-2 py-2 text-white shadow-sm landscape-mobile:py-1">
-        <div className="flex items-center gap-1">
+      <header className="relative z-20 flex h-14 shrink-0 items-center border-b border-pine-dark bg-pine px-2 text-white shadow-sm landscape-mobile:h-11">
+        <div className="flex w-full items-center gap-1">
           <Link
             to="/"
             className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
@@ -220,25 +220,33 @@ export default function SongPage() {
           {hasAudio ? (
             <button
               type="button"
-              onClick={toggleAudio}
-              aria-pressed={isPlaying}
-              aria-label={isPlaying ? "Pausar demonstração" : "Reproduzir demonstração"}
+              onClick={() => {
+                setShowTimeline((current) => {
+                  const next = !current;
+                  if (!next && audioRef.current && !audioRef.current.paused) {
+                    audioRef.current.pause();
+                  }
+                  return next;
+                });
+              }}
+              aria-expanded={showTimeline}
+              aria-label={showTimeline ? "Ocultar player de áudio" : "Abrir player de áudio"}
               className={`inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
-                isPlaying
+                showTimeline
                   ? "bg-white text-pine shadow-sm"
                   : "text-white/90 hover:bg-white/15 hover:text-white"
               }`}
             >
-              {isPlaying ? <PauseIcon /> : <PlayIcon />}
+              <MusicNoteIcon />
             </button>
           ) : (
             <button
               type="button"
               disabled
-              aria-label="Reproduzir música (indisponível)"
+              aria-label="Demonstração de áudio indisponível"
               className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full text-white/35"
             >
-              <PlayIcon />
+              <MusicNoteIcon />
             </button>
           )}
           {hasAudio ? (
@@ -259,14 +267,10 @@ export default function SongPage() {
                   setAudioTime(event.currentTarget.currentTime);
                 }
               }}
-              onPlay={() => {
-                setIsPlaying(true);
-                setShowTimeline(true);
-              }}
+              onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
               onEnded={() => {
                 setIsPlaying(false);
-                setShowTimeline(false);
                 setAudioTime(0);
               }}
               className="hidden"
@@ -291,7 +295,20 @@ export default function SongPage() {
             </button>
           )}
         </div>
-        {hasAudio && showTimeline ? (
+      </header>
+
+      {hasAudio && showTimeline ? (
+        <div className="flex shrink-0 items-center gap-3 border-b border-line bg-card px-3 py-2 landscape-mobile:py-1.5">
+          <button
+            type="button"
+            onClick={toggleAudio}
+            aria-pressed={isPlaying}
+            aria-label={isPlaying ? "Parar demonstração" : "Reproduzir demonstração"}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pine text-white shadow-sm transition-colors hover:bg-pine-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
+          >
+            {isPlaying ? <StopIcon /> : <PlayIcon />}
+          </button>
+
           <div
             ref={timelineRef}
             role="slider"
@@ -305,17 +322,17 @@ export default function SongPage() {
             onPointerUp={handleTimelinePointerUp}
             onPointerCancel={handleTimelinePointerUp}
             onKeyDown={handleTimelineKeyDown}
-            className="group absolute inset-x-0 -bottom-2 z-30 flex h-4 cursor-pointer touch-none select-none items-center focus-visible:outline-none"
+            className="group relative flex h-6 flex-1 cursor-pointer touch-none select-none items-center focus-visible:outline-none"
           >
-            <div className="relative h-1 w-full bg-black/30 transition-[height] group-hover:h-1.5 group-active:h-1.5">
+            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-line transition-[height] group-hover:h-2 group-active:h-2">
               <div
-                className="h-full bg-white"
+                className="h-full rounded-full bg-pine"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
           </div>
-        ) : null}
-      </header>
+        </div>
+      ) : null}
 
       <SongScroll>
         {status === "loading" ? (
@@ -788,7 +805,7 @@ function TrashIcon() {
   );
 }
 
-function PlayIcon() {
+function MusicNoteIcon() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -796,31 +813,29 @@ function PlayIcon() {
       className="h-5 w-5 shrink-0"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.75"
+      strokeWidth="1.85"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="12" cy="12" r="9" />
-      <polygon points="10.2,8.5 16.2,12 10.2,15.5" fill="currentColor" stroke="none" />
+      <path d="M9 18V5l12-2v13" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="18" cy="16" r="3" />
     </svg>
   );
 }
 
-function PauseIcon() {
+function PlayIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden
-      className="h-5 w-5 shrink-0"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <rect x="9.5" y="8.5" width="1.8" height="7" rx="0.6" fill="currentColor" stroke="none" />
-      <rect x="12.7" y="8.5" width="1.8" height="7" rx="0.6" fill="currentColor" stroke="none" />
+    <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4 shrink-0" fill="currentColor">
+      <polygon points="8,5.5 18.5,12 8,18.5" />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="h-3.5 w-3.5 shrink-0" fill="currentColor">
+      <rect x="6" y="6" width="12" height="12" rx="1.8" />
     </svg>
   );
 }

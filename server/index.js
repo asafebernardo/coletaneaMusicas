@@ -45,6 +45,14 @@ app.get("/api/audios/:filename", async (req, res, next) => {
   }
 });
 
+app.get("/data/audios/:filename", async (req, res, next) => {
+  try {
+    await streamAudioFile(req.params.filename, req, res);
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get("/api/songs", async (_req, res, next) => {
   try {
     res.json(await listSongs());

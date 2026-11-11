@@ -1,5 +1,11 @@
 import { useState } from "react";
 import {
+  isIosDevice,
+  triggerPwaInstall,
+  useCanPromptInstall,
+  useIsPwaInstalled,
+} from "@/lib/pwa.js";
+import {
   fontLimits,
   readFontSize,
   readShowChordsButton,
@@ -14,8 +20,20 @@ export default function SettingsPage() {
   const [fontSize, setFontSize] = useState(readFontSize);
   const [showChronological, setShowChronological] = useState(readShowChronological);
   const [showChordsButton, setShowChordsButton] = useState(readShowChordsButton);
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
   const theme = useTheme();
   const accent = useAccent();
+  const canPrompt = useCanPromptInstall();
+  const isInstalled = useIsPwaInstalled();
+  const isIos = isIosDevice();
+
+  const handleInstallPwa = async () => {
+    if (canPrompt) {
+      await triggerPwaInstall();
+      return;
+    }
+    setShowInstallHelp((current) => !current);
+  };
 
   const changeFont = (delta) => {
     setFontSize((current) => {
@@ -27,8 +45,8 @@ export default function SettingsPage() {
 
   return (
     <>
-      <header className="sticky top-0 z-10 border-b border-pine-dark bg-pine px-4 py-3 text-white shadow-sm landscape-mobile:py-2">
-        <h1 className="text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
+      <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center border-b border-pine-dark bg-pine px-4 text-white shadow-sm landscape-mobile:h-11">
+        <h1 className="truncate text-lg font-semibold leading-tight text-white landscape-mobile:text-base">
           Configurações
         </h1>
       </header>
@@ -263,6 +281,74 @@ export default function SettingsPage() {
             </div>
           </div>
         </section>
+
+        {/* 6. Instalar Aplicativo (PWA) */}
+        {!isInstalled ? (
+          <section className="rounded-2xl border border-line bg-paper/60 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-sm font-semibold text-ink">Aplicativo (PWA)</h2>
+                <p className="mt-0.5 text-xs text-ink-soft">
+                  Instale a coletânea no seu dispositivo para acesso rápido e offline
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleInstallPwa}
+                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-pine px-4 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-pine-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  aria-hidden
+                  className="h-4 w-4 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M10 3v9.5" />
+                  <path d="m6.5 9 3.5 3.5L13.5 9" />
+                  <path d="M4 16.5h12" />
+                </svg>
+                Instalar
+              </button>
+            </div>
+
+            {showInstallHelp ? (
+              <div className="mt-3 rounded-xl border border-line bg-card p-3 text-xs leading-relaxed text-ink">
+                {isIos ? (
+                  <div className="space-y-1">
+                    <p className="font-semibold text-ink">Como instalar no iPhone / iPad:</p>
+                    <ol className="list-decimal space-y-0.5 pl-4 text-ink-soft">
+                      <li>
+                        Toque em <strong className="text-ink">Compartilhar</strong> na barra do
+                        Safari.
+                      </li>
+                      <li>
+                        Selecione <strong className="text-ink">Adicionar à Tela de Início</strong>.
+                      </li>
+                    </ol>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <p className="font-semibold text-ink">Como instalar neste navegador:</p>
+                    <ol className="list-decimal space-y-0.5 pl-4 text-ink-soft">
+                      <li>
+                        Abra o menu do navegador (<strong className="text-ink">⋮</strong>) ou o
+                        ícone na barra de endereços.
+                      </li>
+                      <li>
+                        Toque em <strong className="text-ink">Instalar aplicativo</strong> ou{" "}
+                        <strong className="text-ink">Adicionar à tela inicial</strong>.
+                      </li>
+                    </ol>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
       </div>
     </>
   );
