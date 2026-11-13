@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  isMobileDevice,
   isIosDevice,
   triggerPwaInstall,
   useCanPromptInstall,
@@ -10,17 +11,37 @@ export default function LandingPage({ onEnterWeb }) {
   const canPrompt = useCanPromptInstall();
   const isInstalled = useIsPwaInstalled();
   const [showInstallHelp, setShowInstallHelp] = useState(false);
+  const [installStatus, setInstallStatus] = useState("");
+  const [installError, setInstallError] = useState("");
   const logoSrc = `${import.meta.env.BASE_URL || "/"}logo.jfif`;
+  const isMobile = isMobileDevice();
   const isIos = isIosDevice();
 
   const handleInstallClick = async () => {
+    setInstallError("");
+    setShowInstallHelp(false);
+    if (isInstalled) {
+      setInstallStatus("installed");
+      return;
+    }
     if (canPrompt) {
-      const result = await triggerPwaInstall();
-      if (result.outcome === "accepted") {
-        onEnterWeb?.();
+      try {
+        const result = await triggerPwaInstall();
+        if (result.outcome === "accepted") {
+          setInstallStatus("accepted");
+        } else if (result.outcome === "unavailable") {
+          setShowInstallHelp(true);
+        } else {
+          setInstallStatus("dismissed");
+        }
+      } catch (error) {
+        setInstallError(
+          error instanceof Error ? error.message : "Não foi possível iniciar a instalação.",
+        );
       }
       return;
     }
+    setInstallStatus("");
     setShowInstallHelp(true);
   };
 
@@ -44,11 +65,23 @@ export default function LandingPage({ onEnterWeb }) {
           <button
             type="button"
             onClick={handleInstallClick}
-            className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-pine px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-pine-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
+            disabled={!isMobile}
+            aria-describedby={!isMobile ? "install-unavailable" : undefined}
+            className={`flex w-full items-center justify-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+              isMobile
+                ? "bg-pine text-white transition-colors hover:bg-pine-dark"
+                : "cursor-not-allowed bg-line text-ink-soft"
+            }`}
           >
             <DownloadIcon />
-            <span>{isInstalled ? "Aplicativo instalado" : "Baixar Aplicativo (PWA)"}</span>
+            <span>Baixar Coletânea de Louvor</span>
           </button>
+          {!isMobile ? (
+            <p id="install-unavailable" role="note" className="px-2 text-xs leading-relaxed text-ink-soft">
+              A instalação do aplicativo está disponível apenas em celulares e tablets. Neste
+              dispositivo, continue pela versão web.
+            </p>
+          ) : null}
 
           <button
             type="button"
@@ -56,9 +89,24 @@ export default function LandingPage({ onEnterWeb }) {
             className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-line bg-paper px-4 py-3.5 text-sm font-semibold text-ink transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
           >
             <GlobeIcon />
-            <span>Acessar via Web</span>
+            <span>Continuar</span>
           </button>
         </div>
+
+        {installError ? (
+          <p role="alert" className="mt-4 w-full max-w-xs text-left text-sm text-danger">
+            {installError}
+          </p>
+        ) : null}
+        {installStatus || isInstalled ? (
+          <p role="status" className="mt-4 w-full max-w-xs text-left text-sm text-ink">
+            {isInstalled || installStatus === "installed"
+              ? "O aplicativo já está instalado neste dispositivo."
+              : installStatus === "accepted"
+              ? "Instalação iniciada. O navegador está baixando e instalando o aplicativo; esta tela permanecerá aberta."
+              : "A instalação foi cancelada. Você pode tentar novamente quando quiser."}
+          </p>
+        ) : null}
 
         {showInstallHelp ? (
           <div
@@ -69,7 +117,7 @@ export default function LandingPage({ onEnterWeb }) {
             {isInstalled ? (
               <p className="font-medium text-pine">
                 O aplicativo já está instalado neste dispositivo. Você pode abri-lo pela tela
-                inicial ou clicar em &ldquo;Acessar via Web&rdquo;.
+                inicial ou clicar em &ldquo;Continuar&rdquo; para usar a versão web.
               </p>
             ) : isIos ? (
               <div className="space-y-1.5">

@@ -126,16 +126,29 @@ const THEME_COLOR = {
 
 let current = "light";
 let currentAccent = "verde";
+let followsSystemTheme = false;
+let systemThemeMedia = null;
 const listeners = new Set();
 
-function readStored() {
+function readStoredTheme() {
   try {
     const stored = localStorage.getItem(THEME_KEY);
     if (stored === "dark" || stored === "light") return stored;
   } catch {
     /* ignore */
   }
-  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  return null;
+}
+
+function readSystemTheme() {
+  return window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ? "dark" : "light";
+}
+
+function handleSystemThemeChange(event) {
+  if (!followsSystemTheme) return;
+  current = event.matches ? "dark" : "light";
+  applyCssVariables(current, currentAccent);
+  listeners.forEach((listener) => listener());
 }
 
 function readStoredAccent() {
@@ -182,6 +195,7 @@ export function subscribeTheme(listener) {
 
 export function setTheme(next) {
   if (next !== "light" && next !== "dark") return;
+  followsSystemTheme = false;
   current = next;
   try {
     localStorage.setItem(THEME_KEY, next);
@@ -210,9 +224,27 @@ export function toggleTheme() {
 
 export function initTheme() {
   if (typeof document === "undefined") return;
-  current = readStored();
+  const storedTheme = readStoredTheme();
+  followsSystemTheme = storedTheme === null;
+  current = storedTheme || readSystemTheme();
   currentAccent = readStoredAccent();
   applyCssVariables(current, currentAccent);
+
+  if (systemThemeMedia) {
+    if (systemThemeMedia.removeEventListener) {
+      systemThemeMedia.removeEventListener("change", handleSystemThemeChange);
+    } else {
+      systemThemeMedia.removeListener(handleSystemThemeChange);
+    }
+  }
+  systemThemeMedia = window.matchMedia?.("(prefers-color-scheme: dark)") || null;
+  if (systemThemeMedia) {
+    if (systemThemeMedia.addEventListener) {
+      systemThemeMedia.addEventListener("change", handleSystemThemeChange);
+    } else {
+      systemThemeMedia.addListener(handleSystemThemeChange);
+    }
+  }
 }
 
 export function useTheme() {

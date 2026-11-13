@@ -18,6 +18,7 @@ const MORE_PATHS = new Set([
   "/temas",
   "/admin",
   "/admin/previews",
+  "/inicio",
 ]);
 
 export default function HomeLayout() {

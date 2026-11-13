@@ -23,6 +23,18 @@ export function isIosDevice() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent || "");
 }
 
+export function isMobileDevice() {
+  if (typeof navigator === "undefined") return false;
+  if (navigator.userAgentData?.mobile === true) return true;
+
+  const userAgent = navigator.userAgent || "";
+  if (/android|iphone|ipad|ipod|mobile|windows phone|blackberry|iemobile|opera mini|webos/i.test(userAgent)) {
+    return true;
+  }
+
+  return /macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
+}
+
 export function initPwa() {
   if (typeof window === "undefined") return;
   isInstalled = isStandaloneMode();
@@ -68,9 +80,5 @@ export async function triggerPwaInstall() {
   notify();
   await promptEvent.prompt();
   const choice = await promptEvent.userChoice.catch(() => ({ outcome: "dismissed" }));
-  if (choice?.outcome === "accepted") {
-    isInstalled = true;
-    notify();
-  }
   return choice || { outcome: "dismissed" };
 }

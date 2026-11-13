@@ -1,26 +1,48 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  isMobileDevice,
   isIosDevice,
   triggerPwaInstall,
   useCanPromptInstall,
   useIsPwaInstalled,
 } from "@/lib/pwa.js";
 
-const STATIC_PAGE_URL = "https://asafebernardo.github.io/coletaneaMusicas/";
-
 export default function InstallAppPage() {
   const [showInstallHelp, setShowInstallHelp] = useState(false);
+  const [installStatus, setInstallStatus] = useState("");
+  const [installError, setInstallError] = useState("");
   const canPrompt = useCanPromptInstall();
   const isInstalled = useIsPwaInstalled();
+  const isMobile = isMobileDevice();
   const isIos = isIosDevice();
 
   const handleInstall = async () => {
-    if (canPrompt) {
-      await triggerPwaInstall();
+    setInstallError("");
+    setShowInstallHelp(false);
+    if (isInstalled) {
+      setInstallStatus("installed");
       return;
     }
-    setShowInstallHelp((current) => !current);
+    if (canPrompt) {
+      try {
+        const result = await triggerPwaInstall();
+        if (result.outcome === "accepted") {
+          setInstallStatus("accepted");
+        } else if (result.outcome === "unavailable") {
+          setShowInstallHelp(true);
+        } else {
+          setInstallStatus("dismissed");
+        }
+      } catch (error) {
+        setInstallError(
+          error instanceof Error ? error.message : "Não foi possível iniciar a instalação.",
+        );
+      }
+      return;
+    }
+    setInstallStatus("");
+    setShowInstallHelp(true);
   };
 
   return (
@@ -41,7 +63,7 @@ export default function InstallAppPage() {
       </header>
 
       <div className="space-y-3 p-4">
-        {isInstalled ? (
+        {isMobile && isInstalled ? (
           <section className="rounded-2xl border border-line bg-paper/60 p-4">
             <h2 className="text-sm font-semibold text-ink">Aplicativo já instalado</h2>
             <p className="mt-1 text-xs text-ink-soft">
@@ -60,12 +82,25 @@ export default function InstallAppPage() {
               <button
                 type="button"
                 onClick={handleInstall}
-                className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-pine px-4 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-pine-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
+                disabled={!isMobile}
+                aria-describedby={!isMobile ? "install-device-warning" : undefined}
+                className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-xs font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
+                  isMobile
+                    ? "bg-pine text-white transition-colors hover:bg-pine-dark"
+                    : "cursor-not-allowed bg-line text-ink-soft"
+                }`}
               >
                 <InstallIcon />
                 Instalar
               </button>
             </div>
+
+            {!isMobile ? (
+              <p id="install-device-warning" role="note" className="mt-3 text-xs text-ink-soft">
+                A instalação do aplicativo está disponível apenas em celulares e tablets. Neste
+                dispositivo, use a versão web.
+              </p>
+            ) : null}
 
             {showInstallHelp ? (
               <div className="mt-3 rounded-xl border border-line bg-card p-3 text-xs leading-relaxed text-ink">
@@ -102,22 +137,33 @@ export default function InstallAppPage() {
           </section>
         )}
 
+        {installError ? (
+          <p role="alert" className="text-sm text-danger">
+            {installError}
+          </p>
+        ) : null}
+        {installStatus && !isInstalled ? (
+          <p role="status" className="text-sm text-ink">
+            {installStatus === "accepted"
+              ? "Instalação iniciada. O navegador está baixando e instalando o aplicativo; esta tela permanecerá aberta."
+              : "A instalação foi cancelada. Você pode tentar novamente quando quiser."}
+          </p>
+        ) : null}
+
         <section className="rounded-2xl border border-line bg-paper/60 p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="text-sm font-semibold text-ink">Versão web</h2>
+              <h2 className="text-sm font-semibold text-ink">Escolher como acessar</h2>
               <p className="mt-0.5 text-xs text-ink-soft">
-                Acesse a página estática da coletânea no navegador.
+                Volte à tela inicial para continuar pela web ou baixar o aplicativo.
               </p>
             </div>
-            <a
-              href={STATIC_PAGE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/inicio"
               className="inline-flex h-9 shrink-0 items-center rounded-full bg-pine px-4 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-pine-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine"
             >
-              Abrir versão web
-            </a>
+              Escolher
+            </Link>
           </div>
         </section>
       </div>

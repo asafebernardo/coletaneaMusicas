@@ -15,7 +15,12 @@
       (function () {
         try {
           var theme = localStorage.getItem("coletanea-theme");
-          if (theme !== "dark") theme = "light";
+          if (theme !== "dark" && theme !== "light") {
+            theme =
+              window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          }
           document.documentElement.dataset.theme = theme;
           var accent = localStorage.getItem("coletanea-accent") || "verde";
           document.documentElement.dataset.accent = accent;
