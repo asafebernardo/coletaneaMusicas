@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { listSongs, messageForSongError } from "@/api/songs.js";
+import FavoriteButton from "@/components/FavoriteButton.jsx";
 import MarqueeText from "@/components/MarqueeText.jsx";
+import { useFavorites } from "@/lib/favorites.js";
 import { canManageSongs, filterSongs, lyricExcerpt } from "@/lib/songs.js";
 
 export default function CatalogPage() {
@@ -12,6 +14,7 @@ export default function CatalogPage() {
   const [status, setStatus] = useState("loading");
   const [error, setError] = useState("");
   const searchInputRef = useRef(null);
+  const { favoriteIds, favoriteError, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     let active = true;
@@ -90,6 +93,11 @@ export default function CatalogPage() {
         </div>
       ) : null}
 
+      {favoriteError ? (
+        <p role="alert" className="px-4 py-2 text-sm text-danger">
+          {favoriteError}
+        </p>
+      ) : null}
       {status === "loading" ? (
         <div className="space-y-2 p-4" aria-hidden>
           {Array.from({ length: 5 }, (_, index) => (
@@ -114,10 +122,13 @@ export default function CatalogPage() {
       ) : (
         <ul>
           {filtered.map((song) => (
-            <li key={song.id} className="border-b border-line/80 last:border-b-0">
+            <li
+              key={song.id}
+              className="flex min-w-0 items-stretch border-b border-line/80 px-2 last:border-b-0"
+            >
               <Link
                 to={`/musicas/${song.id}`}
-                className="flex min-h-14 min-w-0 items-stretch gap-3 px-4 py-3 hover:bg-paper"
+                className="flex min-h-14 min-w-0 flex-1 items-stretch gap-3 px-2 py-3 hover:bg-paper"
               >
                 <span className="flex w-[3ch] shrink-0 items-center justify-end self-center text-[15px] font-medium tabular-nums">
                   {String(song.numero).padStart(3, "0")}
@@ -130,6 +141,10 @@ export default function CatalogPage() {
                   </span>
                 </span>
               </Link>
+              <FavoriteButton
+                favorite={favoriteIds.includes(Number(song.id))}
+                onToggle={() => toggleFavorite(song.id)}
+              />
             </li>
           ))}
         </ul>

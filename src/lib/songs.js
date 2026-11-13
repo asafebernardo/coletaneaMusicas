@@ -132,6 +132,19 @@ export function writeFontSize(size) {
 
 export const fontLimits = { min: FONT_MIN, max: FONT_MAX };
 
+const DEFAULT_SONG_VIEW_KEY = "coletanea-default-song-view";
+const DEFAULT_SONG_VIEWS = new Set(["letra", "vozes", "cifra"]);
+
+export function readDefaultSongView() {
+  const stored = localStorage.getItem(DEFAULT_SONG_VIEW_KEY);
+  return DEFAULT_SONG_VIEWS.has(stored) ? stored : "letra";
+}
+
+export function writeDefaultSongView(view) {
+  if (!DEFAULT_SONG_VIEWS.has(view)) return;
+  localStorage.setItem(DEFAULT_SONG_VIEW_KEY, view);
+}
+
 const CHRONO_KEY = "coletanea-cronologica";
 
 export function readShowChronological() {
@@ -147,26 +160,6 @@ export function readShowChronological() {
 export function writeShowChronological(show) {
   try {
     localStorage.setItem(CHRONO_KEY, show ? "1" : "0");
-  } catch {
-    /* ignore */
-  }
-}
-
-const CHORDS_BTN_KEY = "coletanea-exibir-botao-cifra";
-
-export function readShowChordsButton() {
-  try {
-    const raw = localStorage.getItem(CHORDS_BTN_KEY);
-    if (raw == null || raw === "") return false;
-    return raw === "1";
-  } catch {
-    return false;
-  }
-}
-
-export function writeShowChordsButton(show) {
-  try {
-    localStorage.setItem(CHORDS_BTN_KEY, show ? "1" : "0");
   } catch {
     /* ignore */
   }

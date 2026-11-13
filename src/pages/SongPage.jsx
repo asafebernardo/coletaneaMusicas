@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteSong, getAudioUrl, getSong, messageForSongError } from "@/api/songs.js";
+import FavoriteButton from "@/components/FavoriteButton.jsx";
 import Lyrics from "@/components/Lyrics.jsx";
 import MarqueeText from "@/components/MarqueeText.jsx";
 import SongScroll from "@/components/SongScroll.jsx";
@@ -14,21 +15,20 @@ import {
 import {
   canManageSongs,
   fontLimits,
+  readDefaultSongView,
   readFontSize,
-  readShowChordsButton,
   readShowChronological,
   writeFontSize,
-  writeShowChordsButton,
   writeShowChronological,
 } from "@/lib/songs.js";
-import { getAccentHex, setTheme, useAccent, useTheme } from "@/lib/theme.js";
+import { useFavorites } from "@/lib/favorites.js";
+import { getAccentHex, useAccent, useTheme } from "@/lib/theme.js";
 import { songHasVoices } from "@/lib/voices.js";
 
 const barItem =
   "flex h-14 landscape-mobile:h-10 flex-col landscape-mobile:flex-row items-center justify-center gap-0.5 landscape-mobile:gap-1.5 text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine";
 const barOn = "text-pine";
 const barOff = "text-ink-soft hover:text-ink";
-const barDisabled = "cursor-not-allowed text-ink-soft/45";
 
 export default function SongPage() {
   const canManage = canManageSongs();
@@ -41,7 +41,6 @@ export default function SongPage() {
   const [error, setError] = useState("");
   const [fontSize, setFontSize] = useState(readFontSize);
   const [showChronological, setShowChronological] = useState(readShowChronological);
-  const [showChordsButton, setShowChordsButton] = useState(readShowChordsButton);
   const [showVoices, setShowVoices] = useState(false);
   const [showChords, setShowChords] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -53,6 +52,7 @@ export default function SongPage() {
   const [showTimeline, setShowTimeline] = useState(false);
   const [audioTime, setAudioTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+  const { favoriteIds, favoriteError, toggleFavorite } = useFavorites();
   const audioRef = useRef(null);
   const timelineRef = useRef(null);
   const seekingRef = useRef(false);
@@ -60,6 +60,7 @@ export default function SongPage() {
   const accent = useAccent();
   const activeColor = getAccentHex(theme, accent);
   const hasAudio = Boolean(song?.audioArquivo);
+  const isFavorite = favoriteIds.includes(Number(song?.id));
   const audioUrl = hasAudio ? getAudioUrl(song.audioArquivo) : "";
   const progressPercent =
     audioDuration > 0 ? Math.min(100, Math.max(0, (audioTime / audioDuration) * 100)) : 0;
@@ -67,6 +68,8 @@ export default function SongPage() {
   const lockLyricsToVoices = hasVoices && Boolean(song?.somenteVozes);
   const activeVoices = (showVoices || lockLyricsToVoices) && !showChords;
   const hasChords = songHasChords(song);
+  const currentView =
+    showChords && hasChords ? "Cifra" : activeVoices ? "Vozes" : "Letra";
   const hasChronology = Boolean(song?.cronologica) && Boolean(String(song?.refrao || "").trim());
   const baseKey = detectSongKey(song?.cifraLetra, song?.cifraRefrao);
   const currentKey =
@@ -88,8 +91,14 @@ export default function SongPage() {
       .then((data) => {
         if (!active) return;
         setSong(data);
-        setShowVoices(songHasVoices(data) && Boolean(data?.somenteVozes));
-        setShowChords(false);
+        const defaultView = readDefaultSongView();
+        const hasSongVoices = songHasVoices(data);
+        const hasSongChords = songHasChords(data);
+        setShowVoices(
+          hasSongVoices &&
+            (defaultView === "vozes" || Boolean(data?.somenteVozes)),
+        );
+        setShowChords(defaultView === "cifra" && hasSongChords);
         setShowSettings(false);
         setTranspose(0);
         setSelectedKey("");
@@ -221,6 +230,13 @@ export default function SongPage() {
               <p className="text-sm font-medium text-white">Coletânea</p>
             )}
           </div>
+          {song ? (
+            <FavoriteButton
+              favorite={isFavorite}
+              onToggle={() => toggleFavorite(song.id)}
+              variant="header"
+            />
+          ) : null}
           {hasAudio ? (
             <button
               type="button"
@@ -310,7 +326,7 @@ export default function SongPage() {
             onKeyDown={handleTimelineKeyDown}
             className="group relative flex h-6 flex-1 cursor-pointer touch-none select-none items-center focus-visible:outline-none"
           >
-            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-line transition-[height] group-hover:h-2 group-active:h-2">
+            <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-line transition-[height] group-hover:h-3 group-active:h-3">
               <div
                 className="h-full rounded-full bg-pine"
                 style={{ width: `${progressPercent}%` }}
@@ -320,7 +336,12 @@ export default function SongPage() {
         </div>
       ) : null}
 
-      <SongScroll>
+      <SongScroll
+        onContentClick={() => {
+          setShowSettings(false);
+          setConfirmDelete(false);
+        }}
+      >
         {status === "loading" ? (
           <div className="space-y-3 p-5" aria-hidden>
             <div className="h-4 w-2/3 animate-pulse rounded bg-paper" />
@@ -355,6 +376,11 @@ export default function SongPage() {
 
         {error && status === "ready" ? (
           <p className="px-4 pb-4 text-sm text-danger">{error}</p>
+        ) : null}
+        {favoriteError ? (
+          <p role="alert" className="px-4 pb-4 text-sm text-danger">
+            {favoriteError}
+          </p>
         ) : null}
       </SongScroll>
 
@@ -410,6 +436,7 @@ export default function SongPage() {
         </div>
       ) : null}
 
+      <div className="relative">
       {song && showChords && hasChords ? (
         <TransposeBar
           cifraLetra={song.cifraLetra}
@@ -425,11 +452,70 @@ export default function SongPage() {
 
       {song && showSettings ? (
         <div
+          id="song-settings-menu"
           role="region"
           aria-label="Menu de configuração"
-          className="space-y-3 landscape-mobile:space-y-2 landscape-mobile:max-h-[48dvh] landscape-mobile:overflow-y-auto border-t border-line bg-card px-4 py-3 landscape-mobile:py-2"
+          className="absolute inset-x-0 bottom-full z-30 mb-2 max-h-[70dvh] space-y-3 overflow-y-auto border border-line bg-card px-4 py-3 shadow-lg landscape-mobile:max-h-[48dvh] landscape-mobile:space-y-2 landscape-mobile:py-2"
         >
-          {/* 1. Tamanho da letra */}
+          <div className="space-y-1.5">
+            <span className="block text-xs font-medium text-ink-soft">Visualização da música</span>
+            <div
+              className="grid grid-cols-3 rounded-xl border border-line bg-paper p-0.5"
+              role="group"
+              aria-label="Visualização da música"
+            >
+              <button
+                type="button"
+                disabled={lockLyricsToVoices}
+                aria-pressed={!showChords && !activeVoices}
+                onClick={() => {
+                  setShowChords(false);
+                  setShowVoices(false);
+                  setTranspose(0);
+                  setSelectedKey("");
+                }}
+                className={`h-9 rounded-lg px-2 text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-40 ${
+                  !showChords && !activeVoices
+                    ? "bg-card text-ink shadow-sm"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Letra
+              </button>
+              <button
+                type="button"
+                disabled={!hasVoices}
+                aria-pressed={activeVoices}
+                onClick={() => {
+                  setShowChords(false);
+                  setTranspose(0);
+                  setSelectedKey("");
+                  setShowVoices(true);
+                }}
+                className={`h-9 rounded-lg px-2 text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-40 ${
+                  activeVoices ? "bg-card text-ink shadow-sm" : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Vozes
+              </button>
+              <button
+                type="button"
+                disabled={!hasChords}
+                aria-pressed={showChords}
+                onClick={() => {
+                  setShowChords(true);
+                  setShowVoices(false);
+                }}
+                className={`h-9 rounded-lg px-2 text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine disabled:cursor-not-allowed disabled:opacity-40 ${
+                  showChords ? "bg-card text-ink shadow-sm" : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                Cifra
+              </button>
+            </div>
+          </div>
+
+          {/* Tamanho da letra */}
           <div className="flex items-center justify-between gap-3">
             <span className="text-xs font-medium text-ink-soft">Tamanho da letra</span>
             <div
@@ -461,42 +547,7 @@ export default function SongPage() {
             </div>
           </div>
 
-          {/* 2. Alterar tema */}
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-xs font-medium text-ink-soft">Tema</span>
-            <div
-              className="inline-flex h-8 items-center rounded-full border border-line bg-paper p-0.5"
-              role="group"
-              aria-label="Tema do aplicativo"
-            >
-              <button
-                type="button"
-                aria-pressed={theme === "light"}
-                onClick={() => setTheme("light")}
-                className={`inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
-                  theme === "light"
-                    ? "bg-pine text-white shadow-sm"
-                    : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                Claro
-              </button>
-              <button
-                type="button"
-                aria-pressed={theme === "dark"}
-                onClick={() => setTheme("dark")}
-                className={`inline-flex h-7 items-center gap-1 rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
-                  theme === "dark"
-                    ? "bg-pine text-white shadow-sm"
-                    : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                Escuro
-              </button>
-            </div>
-          </div>
-
-          {/* 3. Habilitar e desabilitar cronologia */}
+          {/* Cronologia */}
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="block text-xs font-medium text-ink-soft">Cronologia</span>
@@ -545,55 +596,6 @@ export default function SongPage() {
               </button>
             </div>
           </div>
-
-          {/* 4. Visualizar/ocultar botão de Cifras */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="block text-xs font-medium text-ink-soft">Botão de Cifras</span>
-              <span className="block truncate text-[11px] text-ink-soft/75">
-                Visualizar ou ocultar o botão Cifra nas músicas
-              </span>
-            </div>
-            <div
-              className="inline-flex h-8 shrink-0 items-center rounded-full border border-line bg-paper p-0.5"
-              role="group"
-              aria-label="Botão de Cifras"
-            >
-              <button
-                type="button"
-                aria-pressed={showChordsButton}
-                onClick={() => {
-                  setShowChordsButton(true);
-                  writeShowChordsButton(true);
-                }}
-                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
-                  showChordsButton
-                    ? "bg-pine text-white shadow-sm"
-                    : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                Visível
-              </button>
-              <button
-                type="button"
-                aria-pressed={!showChordsButton}
-                onClick={() => {
-                  setShowChordsButton(false);
-                  writeShowChordsButton(false);
-                  setShowChords(false);
-                  setTranspose(0);
-                  setSelectedKey("");
-                }}
-                className={`inline-flex h-7 items-center rounded-full px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pine ${
-                  !showChordsButton
-                    ? "bg-pine text-white shadow-sm"
-                    : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                Oculto
-              </button>
-            </div>
-          </div>
         </div>
       ) : null}
 
@@ -601,100 +603,32 @@ export default function SongPage() {
         <nav
           aria-label="Controles da música"
           data-accent={accent}
-          className={`grid shrink-0 ${
-            showChordsButton ? "grid-cols-4" : "grid-cols-3"
-          } border-t border-line bg-card pb-[env(safe-area-inset-bottom)]`}
+          className="grid shrink-0 grid-cols-2 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]"
         >
-          {lockLyricsToVoices ? (
-            <button
-              type="button"
-              disabled
-              className={`${barItem} ${barDisabled}`}
-              aria-label="Letra bloqueada quando somente vozes está ativado"
-            >
-              <LyricIcon />
-              Letra
-            </button>
-          ) : (
-            <button
-              type="button"
-              className={`${barItem} ${!showChords && !activeVoices ? barOn : barOff}`}
-              style={!showChords && !activeVoices ? { color: activeColor } : undefined}
-              aria-pressed={!showChords && !activeVoices}
-              aria-label="Ver letra"
-              onClick={() => {
-                setShowChords(false);
-                setShowVoices(false);
-                setTranspose(0);
-                setSelectedKey("");
-              }}
-            >
-              <LyricIcon />
-              Letra
-            </button>
-          )}
-          {showChordsButton ? (
-            hasChords ? (
-              <button
-                type="button"
-                className={`${barItem} ${showChords ? barOn : barOff}`}
-                style={showChords ? { color: activeColor } : undefined}
-                aria-pressed={showChords}
-                aria-label="Ver cifra"
-                onClick={() => {
-                  setShowChords(true);
-                  setShowVoices(false);
-                }}
-              >
-                <ChordIcon />
-                Cifra
-              </button>
+          <div
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`Visualização atual: ${currentView}`}
+            className={`${barItem} text-pine`}
+            style={{ color: activeColor }}
+          >
+            {currentView === "Cifra" ? (
+              <ChordIcon />
+            ) : currentView === "Vozes" ? (
+              <VoicesPartsIcon />
             ) : (
-              <button
-                type="button"
-                disabled
-                className={`${barItem} ${barDisabled}`}
-                aria-label="Esta música não tem cifra"
-              >
-                <ChordIcon />
-                Cifra
-              </button>
-            )
-          ) : null}
-          {hasVoices ? (
-            <button
-              type="button"
-              className={`${barItem} ${activeVoices ? barOn : barOff}`}
-              style={activeVoices ? { color: activeColor } : undefined}
-              aria-pressed={activeVoices}
-              aria-label="Ver divisão de vozes"
-              onClick={() => {
-                setShowChords(false);
-                setTranspose(0);
-                setSelectedKey("");
-                setShowVoices(true);
-              }}
-            >
-              <VoicesPartsIcon />
-              Vozes
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className={`${barItem} ${barDisabled}`}
-              aria-label="Esta música não tem vozes configuradas"
-            >
-              <VoicesPartsIcon />
-              Vozes
-            </button>
-          )}
+              <LyricIcon />
+            )}
+            {currentView}
+          </div>
           <button
             type="button"
             className={`${barItem} ${showSettings ? barOn : barOff}`}
             style={showSettings ? { color: activeColor } : undefined}
             aria-pressed={showSettings}
             aria-expanded={showSettings}
+            aria-controls="song-settings-menu"
             aria-label="Configuração"
             onClick={() => setShowSettings((current) => !current)}
           >
@@ -703,6 +637,7 @@ export default function SongPage() {
           </button>
         </nav>
       ) : null}
+      </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { createReadStream } from "node:fs";
-import { mkdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, stat, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { packChordLines, syncChordLines } from "../src/lib/chords.js";
@@ -33,7 +33,10 @@ const AUDIO_EXTENSIONS = {
 };
 
 const CONTENT_TYPES = {
+  ".mp1": "audio/mpeg",
+  ".mp2": "audio/mpeg",
   ".mp3": "audio/mpeg",
+  ".mpeg": "audio/mpeg",
   ".wav": "audio/wav",
   ".ogg": "audio/ogg",
   ".m4a": "audio/mp4",
@@ -52,7 +55,31 @@ async function removeAudioFile(filename) {
   }
 }
 
-async function saveAudioFromDataUrl(songId, dataUrl, originalName) {
+function audioFilename(songId, titulo, ext) {
+  const slug = String(titulo ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "musica";
+  return `song-${songId}-${slug}${ext}`;
+}
+
+async function renameAudioFile(filename, songId, titulo) {
+  const safe = path.basename(String(filename ?? "").trim());
+  if (!safe || safe !== filename) throw new Error("audio_invalido");
+  const ext = path.extname(safe).toLowerCase();
+  const nextFilename = audioFilename(songId, titulo, ext);
+  if (safe === nextFilename) return safe;
+
+  const currentPath = path.join(audiosDir, safe);
+  const nextPath = path.join(audiosDir, nextFilename);
+  await stat(currentPath);
+  await rename(currentPath, nextPath);
+  return nextFilename;
+}
+
+async function saveAudioFromDataUrl(songId, titulo, dataUrl, originalName) {
   const match = String(dataUrl ?? "").match(/^data:([^;,]+);base64,([A-Za-z0-9+/=\s]+)$/);
   if (!match) return { error: "audio_invalido" };
   const mime = match[1].toLowerCase().trim();
@@ -69,7 +96,7 @@ async function saveAudioFromDataUrl(songId, dataUrl, originalName) {
   if (!buffer.length) return { error: "audio_invalido" };
 
   await mkdir(audiosDir, { recursive: true });
-  const audioArquivo = `song-${songId}-${Date.now()}${ext}`;
+  const audioArquivo = audioFilename(songId, titulo, ext);
   await writeFile(path.join(audiosDir, audioArquivo), buffer);
   return {
     audioArquivo,
@@ -239,7 +266,12 @@ export function createSong(input) {
     let audioArquivo = "";
     let audioNome = "";
     if (input?.audioDataUrl) {
-      const savedAudio = await saveAudioFromDataUrl(id, input.audioDataUrl, input.audioNome);
+      const savedAudio = await saveAudioFromDataUrl(
+        id,
+        checked.value.titulo,
+        input.audioDataUrl,
+        input.audioNome,
+      );
       if (savedAudio.error) return savedAudio;
       audioArquivo = savedAudio.audioArquivo;
       audioNome = savedAudio.audioNome;
@@ -262,7 +294,12 @@ export function updateSong(id, input) {
     let audioNome = String(current.audioNome ?? "").trim();
 
     if (input?.audioDataUrl) {
-      const savedAudio = await saveAudioFromDataUrl(id, input.audioDataUrl, input.audioNome);
+      const savedAudio = await saveAudioFromDataUrl(
+        id,
+        checked.value.titulo,
+        input.audioDataUrl,
+        input.audioNome,
+      );
       if (savedAudio.error) return savedAudio;
       if (audioArquivo && audioArquivo !== savedAudio.audioArquivo) {
         await removeAudioFile(audioArquivo);
@@ -273,6 +310,8 @@ export function updateSong(id, input) {
       if (audioArquivo) await removeAudioFile(audioArquivo);
       audioArquivo = "";
       audioNome = "";
+    } else if (audioArquivo) {
+      audioArquivo = await renameAudioFile(audioArquivo, id, checked.value.titulo);
     }
 
     songs[index] = { id, ...checked.value, audioArquivo, audioNome };

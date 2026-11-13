@@ -7,7 +7,18 @@ const barItem =
 const barOn = "text-pine";
 const barOff = "text-ink-soft hover:text-ink";
 
-const MORE_PATHS = new Set(["/mais", "/categorias", "/sobre", "/configuracoes", "/admin"]);
+const MORE_PATHS = new Set([
+  "/mais",
+  "/categorias",
+  "/favoritos",
+  "/previsualizacao",
+  "/instalar",
+  "/sobre",
+  "/configuracoes",
+  "/temas",
+  "/admin",
+  "/admin/previews",
+]);
 
 export default function HomeLayout() {
   const canManage = canManageSongs();
@@ -15,7 +26,7 @@ export default function HomeLayout() {
   const theme = useTheme();
   const accent = useAccent();
   const activeColor = getAccentHex(theme, accent);
-  const isMoreActive = MORE_PATHS.has(pathname);
+  const isMoreActive = MORE_PATHS.has(pathname) || pathname.startsWith("/temas/");
   const isCatalog = !isMoreActive;
 
   return (

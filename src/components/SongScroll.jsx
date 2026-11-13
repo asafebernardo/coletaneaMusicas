@@ -18,7 +18,7 @@ function placeThumb(scroller, thumb) {
   thumb.style.transform = `translateY(${top}px)`;
 }
 
-export default function SongScroll({ children }) {
+export default function SongScroll({ children, onContentClick }) {
   const scrollerRef = useRef(null);
   const thumbRef = useRef(null);
 
@@ -41,7 +41,11 @@ export default function SongScroll({ children }) {
 
   return (
     <div className="relative min-h-0 flex-1">
-      <div ref={scrollerRef} className="song-scroll h-full overflow-y-auto overscroll-contain pb-16">
+      <div
+        ref={scrollerRef}
+        onClick={onContentClick}
+        className="song-scroll h-full overflow-y-auto overscroll-contain pb-16"
+      >
         {children}
       </div>
       <div

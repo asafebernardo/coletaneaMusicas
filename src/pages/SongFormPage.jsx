@@ -91,6 +91,10 @@ export default function SongFormPage() {
   const editing = id != null;
   const numericId = Number(id);
   const initialTab = searchParams.get("aba");
+  const returnTo =
+    editing && searchParams.get("returnTo") === "/admin/previews"
+      ? "/admin/previews"
+      : null;
   const [form, setForm] = useState(emptyForm);
   const [contentTab, setContentTab] = useState(
     VALID_TABS.has(initialTab) ? initialTab : "info",
@@ -194,7 +198,7 @@ export default function SongFormPage() {
       const saved = editing
         ? await updateSong(numericId, payload)
         : await createSong(payload);
-      navigate(`/musicas/${saved.id}`, { replace: true });
+      navigate(returnTo || `/musicas/${saved.id}`, { replace: true });
     } catch (err) {
       setError(messageForSongError(err));
       setSaving(false);
@@ -205,7 +209,7 @@ export default function SongFormPage() {
     <div className="flex h-full min-h-0 flex-1 flex-col">
       <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-1 border-b border-pine-dark bg-pine px-2 text-white shadow-sm landscape-mobile:h-11">
         <Link
-          to={editing ? `/musicas/${id}` : "/"}
+          to={returnTo || (editing ? `/musicas/${id}` : "/")}
           className="inline-flex h-10 w-10 landscape-mobile:h-8 landscape-mobile:w-8 items-center justify-center rounded-full text-white/85 hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label="Voltar"
         >
@@ -394,7 +398,7 @@ export default function SongFormPage() {
 
                 <div className="space-y-1.5">
                   <span className="block text-xs font-medium text-ink-soft">
-                    Demonstração (MP3 / Áudio)
+                    Demonstração (MP3 / MPEG / Áudio)
                   </span>
                   {form.audioDataUrl || (form.audioArquivo && !form.removeAudio) ? (
                     <div className="space-y-2.5 rounded-xl border border-line bg-paper p-3">
@@ -407,7 +411,7 @@ export default function SongFormPage() {
                             Trocar
                             <input
                               type="file"
-                              accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.flac"
+                              accept="audio/*,.mp1,.mp2,.mp3,.mpeg,.wav,.m4a,.ogg,.aac,.flac"
                               className="sr-only"
                               onChange={handleAudioChange}
                             />
@@ -430,10 +434,10 @@ export default function SongFormPage() {
                     </div>
                   ) : (
                     <label className="flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-line bg-paper px-3 py-3 text-sm text-ink-soft hover:border-pine/50 hover:text-ink">
-                      <span>Selecionar arquivo de áudio (MP3, WAV, M4A…)</span>
+                      <span>Selecionar arquivo de áudio (MP3, MPEG, WAV, M4A…)</span>
                       <input
                         type="file"
-                        accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac,.flac"
+                        accept="audio/*,.mp1,.mp2,.mp3,.mpeg,.wav,.m4a,.ogg,.aac,.flac"
                         className="sr-only"
                         onChange={handleAudioChange}
                       />
@@ -448,7 +452,7 @@ export default function SongFormPage() {
             {error ? <p className="mb-2 text-sm text-danger">{error}</p> : null}
             <div className="flex justify-end gap-2">
               <Link
-                to={editing ? `/musicas/${id}` : "/"}
+                to={returnTo || (editing ? `/musicas/${id}` : "/")}
                 className="inline-flex h-10 items-center rounded-lg border border-line px-3 text-sm hover:bg-paper"
               >
                 Cancelar
