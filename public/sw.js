@@ -1,9 +1,9 @@
-const CACHE_NAME = "coletanea-louvor-v4";
+const CACHE_NAME = "coletanea-louvor-v5";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./logo.jfif",
+  "./logo.jpeg",
   "./icon-192.png",
   "./icon-512.png",
 ];

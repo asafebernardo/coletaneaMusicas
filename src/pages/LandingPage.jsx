@@ -13,7 +13,7 @@ export default function LandingPage({ onEnterWeb }) {
   const [showInstallHelp, setShowInstallHelp] = useState(false);
   const [installStatus, setInstallStatus] = useState("");
   const [installError, setInstallError] = useState("");
-  const logoSrc = `${import.meta.env.BASE_URL || "/"}logo.jfif`;
+  const logoSrc = `${import.meta.env.BASE_URL || "/"}logo.jpeg`;
   const isMobile = isMobileDevice();
   const isIos = isIosDevice();
 
@@ -51,7 +51,7 @@ export default function LandingPage({ onEnterWeb }) {
         <img
           src={logoSrc}
           alt="Logo Coletânea de Louvor"
-          className="h-20 w-20 shrink-0 rounded-full border border-line bg-white object-cover shadow-sm landscape-mobile:h-14 landscape-mobile:w-14"
+          className="h-20 w-20 shrink-0 rounded-2xl border border-line bg-white object-cover shadow-sm landscape-mobile:h-14 landscape-mobile:w-14"
         />
 
         <h2 className="mt-4 text-xl font-semibold text-ink landscape-mobile:mt-2 landscape-mobile:text-lg">

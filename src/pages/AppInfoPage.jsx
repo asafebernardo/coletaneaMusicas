@@ -17,7 +17,7 @@ export default function AppInfoPage() {
     mensagem,
     direitosAutorais,
   } = APP_DESCRIPTION;
-  const logoSrc = `${import.meta.env.BASE_URL || "/"}logo.jfif`;
+  const logoSrc = `${import.meta.env.BASE_URL || "/"}logo.jpeg`;
 
   return (
     <>
@@ -41,7 +41,7 @@ export default function AppInfoPage() {
         <img
           src={logoSrc}
           alt={`Logo ${titulo}`}
-          className="h-20 w-20 shrink-0 rounded-full border border-line bg-white object-cover shadow-sm"
+          className="h-20 w-20 shrink-0 rounded-2xl border border-line bg-white object-cover shadow-sm"
         />
 
         <h2 className="mt-4 text-xl font-semibold text-ink">{titulo}</h2>

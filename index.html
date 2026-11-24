@@ -9,8 +9,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Coletânea" />
     <link rel="manifest" href="./manifest.webmanifest" />
-    <link rel="icon" href="./logo.jfif" />
-    <link rel="apple-touch-icon" href="./logo.jfif" />
+    <link rel="icon" href="./logo.jpeg" type="image/jpeg" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
     <script>
       (function () {
         try {
@@ -22,7 +22,7 @@
                 : "light";
           }
           document.documentElement.dataset.theme = theme;
-          var accent = localStorage.getItem("coletanea-accent") || "verde";
+          var accent = localStorage.getItem("coletanea-accent") || "azul";
           document.documentElement.dataset.accent = accent;
           var meta = document.querySelector('meta[name="theme-color"]');
           if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#f3efe6");

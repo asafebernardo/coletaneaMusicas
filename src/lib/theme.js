@@ -125,7 +125,7 @@ const THEME_COLOR = {
 };
 
 let current = "light";
-let currentAccent = "verde";
+let currentAccent = "azul";
 let followsSystemTheme = false;
 let systemThemeMedia = null;
 const listeners = new Set();
@@ -159,7 +159,7 @@ function readStoredAccent() {
     /* ignore */
   }
   const datasetAccent = document.documentElement.dataset.accent;
-  return VALID_ACCENTS.has(datasetAccent) ? datasetAccent : "verde";
+  return VALID_ACCENTS.has(datasetAccent) ? datasetAccent : "azul";
 }
 
 function applyCssVariables(themeValue, accentValue) {
@@ -167,7 +167,7 @@ function applyCssVariables(themeValue, accentValue) {
   const root = document.documentElement;
   root.dataset.theme = themeValue;
   root.dataset.accent = accentValue;
-  const option = ACCENT_MAP.get(accentValue) || ACCENT_OPTIONS[0];
+  const option = ACCENT_MAP.get(accentValue) || ACCENT_MAP.get("azul");
   const isDark = themeValue === "dark";
   root.style.setProperty("--pine", isDark ? option.darkPine : option.pine);
   root.style.setProperty("--pine-dark", isDark ? option.darkPineDark : option.pineDark);
@@ -176,7 +176,7 @@ function applyCssVariables(themeValue, accentValue) {
 }
 
 export function getAccentHex(themeValue = current, accentValue = currentAccent) {
-  const option = ACCENT_MAP.get(accentValue) || ACCENT_OPTIONS[0];
+  const option = ACCENT_MAP.get(accentValue) || ACCENT_MAP.get("azul");
   return themeValue === "dark" ? option.darkSwatch : option.swatch;
 }
 
@@ -252,5 +252,5 @@ export function useTheme() {
 }
 
 export function useAccent() {
-  return useSyncExternalStore(subscribeTheme, getAccent, () => "verde");
+  return useSyncExternalStore(subscribeTheme, getAccent, () => "azul");
 }
